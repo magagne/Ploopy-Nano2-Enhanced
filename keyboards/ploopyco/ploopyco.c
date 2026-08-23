@@ -68,6 +68,12 @@ bool  is_drag_scroll       = false;
 float scroll_accumulated_h = 0;
 float scroll_accumulated_v = 0;
 
+/* MATTHIEU */
+bool led_update_kb(led_t led_state) {
+    is_drag_scroll = led_state.scroll_lock;
+    return led_update_user(led_state);
+}
+
 #ifdef ENCODER_ENABLE
 uint16_t lastScroll        = 0; // Previous confirmed wheel event
 uint16_t lastMidClick      = 0; // Stops scrollwheel from being read if it was pressed
