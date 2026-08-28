@@ -14,4 +14,4 @@ keyboards/ploopyco/nano_2/rev2_003/
             └── drag_scroll/
                 ├── drag_scroll.c
                 └── drag_scroll.h
-eof
+
