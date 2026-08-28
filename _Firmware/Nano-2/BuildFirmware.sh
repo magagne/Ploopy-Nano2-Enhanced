@@ -3,24 +3,24 @@
 set -euo pipefail
 
 # Ploopy Nano 2 firmware builder
-# Builds only: ploopyco/nano_2/rev2_003:via_scrolllock
-# Requires Docker Desktop on macOS.
+# Builds: ploopyco/nano_2/rev2_003:via_scrolllock
+#
+# The script is self-contained and derives all paths from its own location.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 QMK_DIR="$REPO_DIR"
-FIRMWARE_DIR="$REPO_DIR/_Firmware/Nano2"
+FIRMWARE_DIR="$SCRIPT_DIR"
 
 FIRMWARE_NAME="ploopyco_nano_2_rev2_003_via_scrolllock.uf2"
 FIRMWARE_SOURCE="$QMK_DIR/.build/$FIRMWARE_NAME"
+ROOT_FIRMWARE="$QMK_DIR/$FIRMWARE_NAME"
 
 DOCKER_IMAGE="ghcr.io/qmk/qmk_cli"
 BUILD_TARGET="ploopyco/nano_2/rev2_003:via_scrolllock"
 
 printf '\n=== PLOOPY NANO 2 FIRMWARE BUILD ===\n\n'
-
-mkdir -p "$FIRMWARE_DIR"
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "ERROR: Docker command not found."
@@ -53,6 +53,7 @@ echo "→ Building $BUILD_TARGET..."
 echo
 
 rm -f "$FIRMWARE_SOURCE"
+rm -f "$ROOT_FIRMWARE"
 rm -f "$FIRMWARE_DIR/$FIRMWARE_NAME"
 
 docker run --rm -i \
@@ -62,6 +63,10 @@ docker run --rm -i \
     -e SKIP_GIT=1 \
     "$DOCKER_IMAGE" \
     make "$BUILD_TARGET"
+
+# QMK places a copy at the repository root.
+# Remove it so only the organized firmware directory remains.
+rm -f "$ROOT_FIRMWARE"
 
 echo
 echo "→ Checking firmware output..."
@@ -86,4 +91,3 @@ echo "=== BUILD COMPLETE ==="
 echo
 
 ls -lh "$FIRMWARE_DIR/$FIRMWARE_NAME"
-echo
