@@ -68,7 +68,6 @@ bool  is_drag_scroll       = false;
 float scroll_accumulated_h = 0;
 float scroll_accumulated_v = 0;
 
-/* MATTHIEU */
 bool led_update_kb(led_t led_state) {
     is_drag_scroll = led_state.scroll_lock;
     return led_update_user(led_state);
