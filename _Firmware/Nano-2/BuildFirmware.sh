@@ -2,8 +2,8 @@
 
 set -euo pipefail
 
-# Ploopy Nano 2 Scroll Lock / Drag Scroll firmware builder
-# Builds: ploopyco/nano_2/rev2_003:scrolllock
+# Ploopy Nano 2 full firmware builder
+# Builds: ploopyco/nano_2/rev2_003:full
 #
 # The script is self-contained and derives all paths from its own location.
 
@@ -13,14 +13,14 @@ REPO_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 QMK_DIR="$REPO_DIR"
 FIRMWARE_DIR="$SCRIPT_DIR"
 
-FIRMWARE_NAME="ploopyco_nano_2_rev2_003_scrolllock.uf2"
-FIRMWARE_SOURCE="$QMK_DIR/.build/$FIRMWARE_NAME"
+FIRMWARE_NAME="ploopyco_nano_2_rev2_003.uf2"
+FIRMWARE_SOURCE="$QMK_DIR/.build/ploopyco_nano_2_rev2_003_full.uf2"
 ROOT_FIRMWARE="$QMK_DIR/$FIRMWARE_NAME"
 
 DOCKER_IMAGE="ghcr.io/qmk/qmk_cli"
-BUILD_TARGET="ploopyco/nano_2/rev2_003:scrolllock"
+BUILD_TARGET="ploopyco/nano_2/rev2_003:full"
 
-printf '\n=== PLOOPY NANO 2 SCROLL LOCK / DRAG SCROLL FIRMWARE BUILD ===\n\n'
+printf '\n=== PLOOPY NANO 2 FULL FIRMWARE BUILD ===\n\n'
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "ERROR: Docker command not found."

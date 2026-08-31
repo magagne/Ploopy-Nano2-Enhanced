@@ -6,7 +6,7 @@ This repository adds a custom **VIA / Raw HID interface** that allows an externa
 
 The customization also preserves and exposes the Ploopy's **Scroll Lock state and LED behavior** as part of the Drag Scroll functionality.
 
-The custom functionality is isolated in the Nano 2 `via_scrolllock` keymap and does not require replacing the normal Ploopy Drag Scroll implementation.
+The custom functionality is isolated in the Nano 2 `scrolllock` keymap and does not require replacing the normal Ploopy Drag Scroll implementation.
 
 ## What This Repository Does
 
@@ -50,7 +50,7 @@ ZMK
 PLOOPY SIDE
 ───────────
 Ploopy-VIA
-  └── via_scrolllock/keymap.c
+  └── scrolllock/keymap.c
         │
         └── via_command_kb()
               │
@@ -122,7 +122,7 @@ The actual Drag Scroll processing remains in the normal Ploopy firmware.
 
 The Ploopy firmware already contains the Drag Scroll engine and the `is_drag_scroll` state.
 
-The custom `via_scrolllock` keymap does not reimplement that functionality.
+The custom `scrolllock` keymap does not reimplement that functionality.
 
 Instead, it provides an additional control path through VIA:
 
@@ -198,7 +198,7 @@ The Ploopy firmware then performs the actual Drag Scroll behavior.
 The custom keymap is located at:
 
 ```text
-keyboards/ploopyco/nano_2/rev2_003/keymaps/via_scrolllock/
+keyboards/ploopyco/nano_2/rev2_003/keymaps/scrolllock/
 ├── keymap.c
 └── rules.mk
 ```
@@ -267,7 +267,7 @@ Ploopy-VIA/
         └── nano_2/
             └── rev2_003/
                 └── keymaps/
-                    └── via_scrolllock/
+                    └── scrolllock/
                         ├── keymap.c
                         └── rules.mk
 ```
