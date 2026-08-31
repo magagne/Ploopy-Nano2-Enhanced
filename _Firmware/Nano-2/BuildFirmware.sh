@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-# Ploopy Nano 2 full firmware builder
+# Ploopy Nano 2 firmware builder
 # Builds: ploopyco/nano_2/rev2_003:full
 #
 # The script is self-contained and derives all paths from its own location.
@@ -14,13 +14,13 @@ QMK_DIR="$REPO_DIR"
 FIRMWARE_DIR="$SCRIPT_DIR"
 
 FIRMWARE_NAME="ploopyco_nano_2_rev2_003.uf2"
-FIRMWARE_SOURCE="$QMK_DIR/.build/ploopyco_nano_2_rev2_003_full.uf2"
+FIRMWARE_SOURCE="$QMK_DIR/.build/ploopyco_nano_2_rev2_003_default.uf2"
 ROOT_FIRMWARE="$QMK_DIR/$FIRMWARE_NAME"
 
 DOCKER_IMAGE="ghcr.io/qmk/qmk_cli"
-BUILD_TARGET="ploopyco/nano_2/rev2_003:full"
+BUILD_TARGET="ploopyco/nano_2/rev2_003"
 
-printf '\n=== PLOOPY NANO 2 FULL FIRMWARE BUILD ===\n\n'
+printf '\n=== PLOOPY NANO 2 FIRMWARE BUILD ===\n\n'
 
 if ! command -v docker >/dev/null 2>&1; then
     echo "ERROR: Docker command not found."

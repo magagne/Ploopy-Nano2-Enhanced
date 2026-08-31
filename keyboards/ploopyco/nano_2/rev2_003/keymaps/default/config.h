@@ -1,3 +1,4 @@
 #pragma once
 
 #define VIA_EEPROM_CUSTOM_CONFIG_SIZE 1
+#define VIA_FIRMWARE_VERSION 0x00010000
