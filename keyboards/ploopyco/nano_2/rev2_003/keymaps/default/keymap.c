@@ -17,6 +17,12 @@ enum custom_keycodes {
 
 static uint8_t rotation_index = 0;
 
+void keyboard_post_init_user(void) {
+    uint32_t saved_rotation = eeconfig_read_user();
+
+    rotation_index = (saved_rotation < 8) ? saved_rotation : 0;
+}
+
 static inline int8_t clamp_mouse_xy(int16_t value) {
     if (value < -127) {
         return -127;
@@ -127,7 +133,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
             break;
 
         case id_custom_save:
-            /* Rotation is currently volatile and is not saved. */
+            eeconfig_update_user(rotation_index);
             break;
 
         default:
