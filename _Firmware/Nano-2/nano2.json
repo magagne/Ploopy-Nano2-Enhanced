@@ -1,0 +1,58 @@
+{
+  "name": "Ploopy Nano 2 Trackball",
+  "vendorId": "0x5043",
+  "productId": "0x4CE5",
+  "matrix": {
+    "rows": 1,
+    "cols": 1
+  },
+  "customKeycodes": [
+    {
+      "name": "DPI Config",
+      "title": "DPI Config",
+      "shortName": "DPI"
+    },
+    {
+      "name": "Drag Scroll",
+      "title": "Drag Scroll",
+      "shortName": "DragScl"
+    }
+  ],
+  "layouts": {
+    "keymap": [
+      [
+        {
+          "h": 1
+        },
+        "0,0"
+      ]
+    ]
+  },
+  "menus": [
+    {
+      "label": "Ploopy Settings",
+      "content": [
+        {
+          "label": "Basic",
+          "content": [
+            {
+              "label": "Rotation",
+              "type": "dropdown",
+              "options": [
+                ["0", 0],
+                ["45", 1],
+                ["90", 2],
+                ["135", 3],
+                ["180", 4],
+                ["225", 5],
+                ["270", 6],
+                ["315", 7]
+              ],
+              "content": ["id_rotation", 0, 1]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
