@@ -194,7 +194,6 @@ bool via_command_kb(uint8_t *data, uint8_t length) {
             response[1] = 'N';
 
             raw_hid_send(response, length);
-            dprintf("RAW HID: DRAG_SCROLL ON\n");
 
             return true;
 
@@ -206,7 +205,6 @@ bool via_command_kb(uint8_t *data, uint8_t length) {
             response[2] = 'F';
 
             raw_hid_send(response, length);
-            dprintf("RAW HID: DRAG_SCROLL OFF\n");
 
             return true;
 
