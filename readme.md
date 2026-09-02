@@ -4,6 +4,16 @@ Custom QMK/VIA firmware for the **Ploopy Nano 2 Rev2.003**.
 
 This repository extends the existing Ploopy firmware with a configurable **VIA / Raw HID interface**, **Scroll Lock / Drag Scroll integration**, **pointer rotation**, **Scroll Speed configuration**, and **DPI configuration**.
 
+### VIA Configuration
+
+The Nano 2 exposes all three user-configurable settings directly under **Ploopy Settings** in VIA:
+
+- **Rotation**
+- **Scroll Speed**
+- **DPI**
+
+These settings are persistent and can be changed through VIA without rebuilding the firmware.
+
 The project is designed around a single Nano-2 firmware configuration. The different functions are integrated into the same firmware rather than maintained as separate keymaps.
 
 ---
@@ -80,21 +90,35 @@ The VIA device definition is:
 
 This definition describes the Nano 2 to VIA and allows the firmware's keymap and custom keycodes to be configured through the VIA interface.
 
+### Ploopy Settings
+
+The **Ploopy Settings** menu in VIA provides the three configurable firmware settings:
+
+* **Rotation**
+* **Scroll Speed**
+* **DPI**
+
+These settings are persistent and can be changed through VIA without rebuilding the firmware.
+
+### Nano-2 Button / Key Assignment
+
+The Nano-2 button can also be assigned through the VIA keymap to specific functions:
+
+* **DPI Config**
+* **Scroll Speed**
+* **Drag Scroll**
+
+These assignments provide direct control of the corresponding functions from the Nano-2 button.
+
+**Rotation is configured through Ploopy Settings and is not a Nano-2 button assignment.**
+
 The VIA custom keycodes are:
 
 * **DPI Config**
 * **Drag Scroll**
 * **Scroll Speed**
 
-The VIA device definition also exposes the following settings under **Ploopy Settings**:
-
-* **Rotation**
-* **Scroll Speed**
-* **DPI**
-
-The dropdown settings and the corresponding custom keycodes operate on the same firmware functionality where applicable.
-
----
+The dropdown settings and the corresponding custom keycodes operate on the same underlying firmware functionality where applicable.
 
 # Scroll Lock / Drag Scroll
 
