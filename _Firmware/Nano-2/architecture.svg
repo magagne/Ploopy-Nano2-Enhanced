@@ -28,7 +28,7 @@
   <text x="155" y="197" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#666">QMK / ZMK</text>
 
   <rect x="350" y="155" width="220" height="55" rx="9" fill="#ffffff" stroke="#777" stroke-width="2"/>
-  <text x="460" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold">Corne-Ploopy-Bridge</text>
+  <text x="460" y="178" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold">DragScroll-HID</text>
   <text x="460" y="197" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#666">Host bridge</text>
 
   <rect x="680" y="145" width="260" height="75" rx="9" fill="#eef5fc" stroke="#356da8" stroke-width="2"/>

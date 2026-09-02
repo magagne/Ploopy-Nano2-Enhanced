@@ -292,7 +292,7 @@ The Drag Scroll protocol intentionally uses two simple command bytes:
 
 The complete communication path is:
 
-`Corne -> 'S' / 's' -> Corne-Ploopy-Bridge -> VIA / Raw HID -> Ploopy Nano 2 -> via_command_kb() -> is_drag_scroll -> Existing Ploopy Drag Scroll`
+`Corne -> 'S' / 's' -> DragScroll-HID -> VIA / Raw HID -> Ploopy Nano 2 -> via_command_kb() -> is_drag_scroll -> Existing Ploopy Drag Scroll`
 
 The keyboard determines when Drag Scroll should change.
 
@@ -442,7 +442,7 @@ It uses the same Raw HID protocol as the QMK/VIA implementation.
 
 The ZMK implementation is independent of the Ploopy firmware.
 
-## Corne-Ploopy-Bridge
+## DragScroll-HID
 
 The host-side bridge receives the Raw HID commands from the Corne and forwards them to the Ploopy through its VIA / Raw HID interface.
 
