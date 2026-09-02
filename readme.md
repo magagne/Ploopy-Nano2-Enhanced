@@ -376,19 +376,19 @@ This makes the repository reflect the firmware that is actually being developed 
 
 The normal Ploopy firmware continues to provide:
 
-* pointing-device processing
+* Pointing-device processing
 * Drag Scroll implementation
 * Scroll Lock handling
 * Scroll Lock LED behavior
 * DPI configuration and physical DPI control
-* other Ploopy functionality
+* Other Ploopy functionality
 
 This project adds:
 
 * VIA configuration
 * Raw HID Drag Scroll control
-* configurable pointer rotation
-* configurable Scroll Speed
+* Configurable pointer rotation
+* Configurable Scroll Speed
 * VIA DPI configuration
 * Nano-2-specific firmware integration
 
