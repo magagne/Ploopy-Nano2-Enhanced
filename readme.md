@@ -182,7 +182,7 @@ This allows the selected rotation to persist across firmware restarts.
 
 The firmware can therefore retain the user's selected physical orientation without requiring the rotation to be hard-coded into the firmware.
 
-Rotation can be changed through the **Ploopy Settings -> Basic -> Rotation** VIA dropdown.
+Rotation can be changed through the **Ploopy Settings -> Rotation** VIA dropdown.
 
 The firmware also contains internal rotation keycodes used by the keymap implementation, but the VIA device definition exposes the configuration through the Rotation dropdown rather than as additional VIA custom keycodes.
 
@@ -206,7 +206,7 @@ The available settings are:
 
 Scroll Speed can be changed in two ways:
 
-* through the **Ploopy Settings -> Basic -> Scroll Speed** VIA dropdown
+* through the **Ploopy Settings -> Scroll Speed** VIA dropdown
 * through the **Scroll Speed** VIA custom keycode
 
 The custom keycode cycles through the available speed settings.
@@ -227,7 +227,7 @@ The Nano 2 retains the existing Ploopy DPI configuration mechanism.
 
 DPI can be selected through:
 
-* the **Ploopy Settings -> Basic -> DPI** VIA dropdown
+* the **Ploopy Settings -> DPI** VIA dropdown
 * the existing **DPI Config** VIA custom keycode
 
 The selected DPI uses the existing Ploopy DPI configuration and is stored persistently in EEPROM.
