@@ -66,9 +66,7 @@ The custom keymap contains the integrated functionality for:
 * Pointer rotation
 * Scroll Speed configuration
 * DPI configuration
-* VIA configuration
 
-There are no separate `scrolllock`, `rotation`, or `full` keymap directories.
 
 ---
 
@@ -385,7 +383,6 @@ The normal Ploopy firmware continues to provide:
 
 This project adds:
 
-* VIA configuration
 * Raw HID Drag Scroll control
 * Configurable pointer rotation
 * Configurable Scroll Speed
