@@ -1,6 +1,6 @@
 # Ploopy-VIA
 
-Custom QMK/VIAL firmware for the **Ploopy Nano 2 Rev2.003**.
+Custom QMK/VIA firmware for the **Ploopy Nano 2 Rev2.003**.
 
 This repository extends the existing Ploopy firmware with a configurable **VIA / Raw HID interface**, **Scroll Lock / Drag Scroll integration**, **pointer rotation**, **Scroll Speed configuration**, and **DPI configuration**.
 
@@ -12,7 +12,7 @@ The project is designed around a single Nano-2 firmware configuration. The diffe
 
 The current Nano-2 firmware provides:
 
-* **VIAL support**
+* **VIA support**
 * **Raw HID support**
 * **Scroll Lock / Drag Scroll control**
 * **Scroll Lock LED state integration**
@@ -59,7 +59,7 @@ The custom firmware uses a single keymap:
 
 The custom keymap contains the integrated functionality for:
 
-* VIAL
+* VIA
 * Raw HID
 * Drag Scroll / Scroll Lock control
 * pointer rotation
@@ -71,23 +71,23 @@ There are no separate `scrolllock`, `rotation`, or `full` keymap directories.
 
 ---
 
-# VIAL
+# VIA
 
-The Nano 2 firmware is configured for VIAL.
+The Nano 2 firmware is configured for VIA.
 
-The VIAL device definition is:
+The VIA device definition is:
 
 `_Firmware/Nano-2/nano2.json`
 
-This definition describes the Nano 2 to VIAL and allows the firmware's keymap and custom keycodes to be configured through the VIAL interface.
+This definition describes the Nano 2 to VIA and allows the firmware's keymap and custom keycodes to be configured through the VIA interface.
 
-The VIAL custom keycodes are:
+The VIA custom keycodes are:
 
 * **DPI Config**
 * **Drag Scroll**
 * **Scroll Speed**
 
-The VIAL device definition also exposes the following settings under **Ploopy Settings -> Basic**:
+The VIA device definition also exposes the following settings under **Ploopy Settings -> Basic**:
 
 * **Rotation**
 * **Scroll Speed**
@@ -183,9 +183,9 @@ This allows the selected rotation to persist across firmware restarts.
 
 The firmware can therefore retain the user's selected physical orientation without requiring the rotation to be hard-coded into the firmware.
 
-Rotation can be changed through the **Ploopy Settings -> Basic -> Rotation** VIAL dropdown.
+Rotation can be changed through the **Ploopy Settings -> Basic -> Rotation** VIA dropdown.
 
-The firmware also contains internal rotation keycodes used by the keymap implementation, but the VIAL device definition exposes the configuration through the Rotation dropdown rather than as additional VIAL custom keycodes.
+The firmware also contains internal rotation keycodes used by the keymap implementation, but the VIA device definition exposes the configuration through the Rotation dropdown rather than as additional VIA custom keycodes.
 
 ---
 
@@ -207,8 +207,8 @@ The available settings are:
 
 Scroll Speed can be changed in two ways:
 
-* through the **Ploopy Settings -> Basic -> Scroll Speed** VIAL dropdown
-* through the **Scroll Speed** VIAL custom keycode
+* through the **Ploopy Settings -> Basic -> Scroll Speed** VIA dropdown
+* through the **Scroll Speed** VIA custom keycode
 
 The custom keycode cycles through the available speed settings.
 
@@ -228,8 +228,8 @@ The Nano 2 retains the existing Ploopy DPI configuration mechanism.
 
 DPI can be selected through:
 
-* the **Ploopy Settings -> Basic -> DPI** VIAL dropdown
-* the existing **DPI Config** VIAL custom keycode
+* the **Ploopy Settings -> Basic -> DPI** VIA dropdown
+* the existing **DPI Config** VIA custom keycode
 
 The selected DPI uses the existing Ploopy DPI configuration and is stored persistently in EEPROM.
 
@@ -245,7 +245,7 @@ The VIA DPI configuration is an additional configuration path and does not repla
 
 # VIA Configuration and Persistence
 
-The Nano 2 configuration exposed through VIAL consists of:
+The Nano 2 configuration exposed through VIA consists of:
 
 * **Rotation**
 * **Scroll Speed**
@@ -261,7 +261,7 @@ DPI continues to use the existing Ploopy DPI configuration storage.
 
 The selected settings are restored when the firmware starts.
 
-This means the user can configure the Nano 2 through VIAL without needing to rebuild the firmware for normal configuration changes.
+This means the user can configure the Nano 2 through VIA without needing to rebuild the firmware for normal configuration changes.
 
 ---
 
@@ -363,7 +363,7 @@ The project is now developed as a **single firmware**.
 
 The development cycle is:
 
-`Modify firmware -> Build Nano 2 firmware -> Flash Nano 2 -> Test VIAL / pointer / Drag Scroll -> Commit verified changes`
+`Modify firmware -> Build Nano 2 firmware -> Flash Nano 2 -> Test VIA / pointer / Drag Scroll -> Commit verified changes`
 
 Individual features are no longer isolated into separate keymap directories.
 
@@ -384,7 +384,7 @@ The normal Ploopy firmware continues to provide:
 
 This project adds:
 
-* VIAL configuration
+* VIA configuration
 * Raw HID Drag Scroll control
 * configurable pointer rotation
 * configurable Scroll Speed
@@ -425,9 +425,9 @@ This allows the custom Nano-2 functionality to build on top of the existing Ploo
 
 The complete system uses three projects.
 
-## Corne - QMK / VIAL
+## Corne - QMK / VIA
 
-The QMK/VIAL Corne firmware contains the custom Drag Scroll module.
+The QMK/VIA Corne firmware contains the custom Drag Scroll module.
 
 The module generates the Raw HID commands used by the Ploopy:
 
@@ -438,7 +438,7 @@ The module generates the Raw HID commands used by the Ploopy:
 
 The ZMK implementation provides equivalent Drag Scroll behavior using ZMK.
 
-It uses the same Raw HID protocol as the QMK/VIAL implementation.
+It uses the same Raw HID protocol as the QMK/VIA implementation.
 
 The ZMK implementation is independent of the Ploopy firmware.
 
