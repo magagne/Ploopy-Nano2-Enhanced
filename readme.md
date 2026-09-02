@@ -30,10 +30,11 @@ The firmware is based on the existing Ploopy pointing-device implementation rath
 
 # Architecture
 
-The project has two related paths:
+The project has three related paths:
 
-1. **Control path** - the Corne and host bridge control the Ploopy's Drag Scroll state through Raw HID.
-2. **Pointing-data path** - the Nano 2 transforms the pointing-device X/Y coordinates before they enter the existing Ploopy processing.
+1. **Control path** - the Corne and `DragScroll-HID` control the Ploopy's Drag Scroll state through Raw HID.
+2. **Scroll Lock / LED state path** - the common Ploopy firmware receives the host Scroll Lock LED state through `led_update_kb()` and uses `led_state.scroll_lock` to update `is_drag_scroll`.
+3. **Pointing-data path** - the Nano 2 transforms the pointing-device X/Y coordinates before they enter the existing Ploopy processing.
 
 ![Ploopy-VIA Architecture](_Firmware/Nano-2/architecture.svg)
 
@@ -41,7 +42,7 @@ The important architectural requirement is that **pointer rotation is applied to
 
 This means that normal pointer movement and Drag Scroll operate in the same rotated coordinate system.
 
-The Raw HID control path does not directly drive the Drag Scroll engine. The bridge sends a command to the Nano 2, the Nano 2 updates `is_drag_scroll`, and the existing Ploopy Drag Scroll engine uses that state.
+The Raw HID control path does not directly implement the Drag Scroll engine. The bridge sends a command to the Nano 2, and the Nano 2 updates `is_drag_scroll`. The common Ploopy firmware also maps the host Scroll Lock state to `is_drag_scroll` through `led_update_kb()`, so the host Scroll Lock state remains integrated with the existing Drag Scroll mechanism. The existing Ploopy Drag Scroll engine then uses `is_drag_scroll` as its state.
 
 The project deliberately keeps the existing Ploopy Drag Scroll engine as the source of truth rather than creating a second implementation.
 
