@@ -86,7 +86,7 @@ The VIA custom keycodes are:
 * **Drag Scroll**
 * **Scroll Speed**
 
-The VIA device definition also exposes the following settings under **Ploopy Settings -> Basic**:
+The VIA device definition also exposes the following settings under **Ploopy Settings**:
 
 * **Rotation**
 * **Scroll Speed**
@@ -250,7 +250,7 @@ The Nano 2 configuration exposed through VIA consists of:
 * **Scroll Speed**
 * **DPI**
 
-These settings are available under **Ploopy Settings -> Basic**.
+These settings are available under **Ploopy Settings**.
 
 The configuration is handled by the Nano-2 firmware.
 
