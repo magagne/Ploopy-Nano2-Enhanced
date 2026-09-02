@@ -68,6 +68,9 @@ bool  is_drag_scroll       = false;
 float scroll_accumulated_h = 0;
 float scroll_accumulated_v = 0;
 
+float ploopy_dragscroll_divisor_h = PLOOPY_DRAGSCROLL_DIVISOR_H;
+float ploopy_dragscroll_divisor_v = PLOOPY_DRAGSCROLL_DIVISOR_V;
+
 bool led_update_kb(led_t led_state) {
     is_drag_scroll = led_state.scroll_lock;
     return led_update_user(led_state);
@@ -146,8 +149,8 @@ void cycle_dpi(void) {
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     mouse_report = pointing_device_task_user(mouse_report);
     if (is_drag_scroll) {
-        scroll_accumulated_h += (float)mouse_report.x / PLOOPY_DRAGSCROLL_DIVISOR_H;
-        scroll_accumulated_v += (float)mouse_report.y / PLOOPY_DRAGSCROLL_DIVISOR_V;
+        scroll_accumulated_h += (float)mouse_report.x / ploopy_dragscroll_divisor_h;
+        scroll_accumulated_v += (float)mouse_report.y / ploopy_dragscroll_divisor_v;
 
         // Assign integer parts of accumulated scroll values to the mouse report
         mouse_report.h = (int8_t)scroll_accumulated_h;

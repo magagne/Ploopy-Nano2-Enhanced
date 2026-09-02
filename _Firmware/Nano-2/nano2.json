@@ -16,6 +16,11 @@
       "name": "Drag Scroll",
       "title": "Drag Scroll",
       "shortName": "DragScl"
+    },
+    {
+      "name": "Scroll Speed",
+      "title": "Scroll Speed",
+      "shortName": "ScrlSpd"
     }
   ],
   "layouts": {
@@ -39,16 +44,106 @@
               "label": "Rotation",
               "type": "dropdown",
               "options": [
-                ["0", 0],
-                ["45", 1],
-                ["90", 2],
-                ["135", 3],
-                ["180", 4],
-                ["225", 5],
-                ["270", 6],
-                ["315", 7]
+                [
+                  "0",
+                  0
+                ],
+                [
+                  "45",
+                  1
+                ],
+                [
+                  "90",
+                  2
+                ],
+                [
+                  "135",
+                  3
+                ],
+                [
+                  "180",
+                  4
+                ],
+                [
+                  "225",
+                  5
+                ],
+                [
+                  "270",
+                  6
+                ],
+                [
+                  "315",
+                  7
+                ]
               ],
-              "content": ["id_rotation", 0, 1]
+              "content": [
+                "id_rotation",
+                0,
+                1
+              ]
+            },
+            {
+              "label": "Scroll Speed",
+              "type": "dropdown",
+              "options": [
+                [
+                  "Normal",
+                  0
+                ],
+                [
+                  "Slow",
+                  1
+                ],
+                [
+                  "Slower",
+                  2
+                ],
+                [
+                  "Fast",
+                  3
+                ],
+                [
+                  "Faster",
+                  4
+                ]
+              ],
+              "content": [
+                "id_scroll_speed",
+                0,
+                2
+              ]
+            },
+            {
+              "label": "DPI",
+              "type": "dropdown",
+              "options": [
+                [
+                  "600",
+                  0
+                ],
+                [
+                  "900",
+                  1
+                ],
+                [
+                  "1200",
+                  2
+                ],
+                [
+                  "1600",
+                  3
+                ],
+                [
+                  "2400",
+                  4
+                ]
+              ],
+              "content": [
+                "id_dpi",
+                0,
+                3
+              ]
             }
           ]
         }

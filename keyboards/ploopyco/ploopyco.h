@@ -30,9 +30,13 @@ typedef union {
 extern keyboard_config_t keyboard_config;
 extern uint16_t          dpi_array[];
 
+extern float ploopy_dragscroll_divisor_h;
+extern float ploopy_dragscroll_divisor_v;
+
 enum ploopy_keycodes {
     DPI_CONFIG = QK_KB_0,
     DRAG_SCROLL,
+    SCROLL_SPEED,
 };
 
 bool encoder_update_user(uint8_t index, bool clockwise);

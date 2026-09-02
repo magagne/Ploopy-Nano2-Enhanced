@@ -15,12 +15,52 @@ enum custom_keycodes {
     ROT_315,
 };
 
+enum scroll_speed {
+    SCROLL_SPEED_NORMAL = 0,
+    SCROLL_SPEED_SLOW,
+    SCROLL_SPEED_SLOWER,
+    SCROLL_SPEED_FAST,
+    SCROLL_SPEED_FASTER,
+};
+
+static const uint8_t scroll_speed_divisors[] = {
+    [SCROLL_SPEED_NORMAL] = 64,
+    [SCROLL_SPEED_SLOW]   = 96,
+    [SCROLL_SPEED_SLOWER] = 128,
+    [SCROLL_SPEED_FAST]   = 48,
+    [SCROLL_SPEED_FASTER] = 32,
+};
+
 static uint8_t rotation_index = 0;
+static uint8_t scroll_speed_index = SCROLL_SPEED_NORMAL;
+
+typedef union {
+    uint32_t raw;
+    struct {
+        uint8_t rotation_index;
+        uint8_t scroll_speed_index;
+    };
+} nano2_user_config_t;
+
+static void apply_scroll_speed(void) {
+    float divisor = scroll_speed_divisors[scroll_speed_index];
+
+    ploopy_dragscroll_divisor_h = divisor;
+    ploopy_dragscroll_divisor_v = divisor;
+}
 
 void keyboard_post_init_user(void) {
-    uint32_t saved_rotation = eeconfig_read_user();
+    nano2_user_config_t config;
+    config.raw = eeconfig_read_user();
 
-    rotation_index = (saved_rotation < 8) ? saved_rotation : 0;
+    rotation_index = (config.rotation_index < 8) ? config.rotation_index : 0;
+
+    scroll_speed_index =
+        (config.scroll_speed_index < ARRAY_SIZE(scroll_speed_divisors))
+            ? config.scroll_speed_index
+            : SCROLL_SPEED_NORMAL;
+
+    apply_scroll_speed();
 }
 
 static inline int8_t clamp_mouse_xy(int16_t value) {
@@ -41,49 +81,41 @@ static report_mouse_t apply_rotation(report_mouse_t mouse_report) {
 
     switch (rotation_index) {
         case 0:
-            /* 0 degrees */
             new_x = x;
             new_y = y;
             break;
 
         case 1:
-            /* 45 degrees */
             new_x = (x * 181 - y * 181) / 256;
             new_y = (x * 181 + y * 181) / 256;
             break;
 
         case 2:
-            /* 90 degrees */
             new_x = -y;
             new_y = x;
             break;
 
         case 3:
-            /* 135 degrees */
             new_x = (-x * 181 - y * 181) / 256;
             new_y = (x * 181 - y * 181) / 256;
             break;
 
         case 4:
-            /* 180 degrees */
             new_x = -x;
             new_y = -y;
             break;
 
         case 5:
-            /* 225 degrees */
             new_x = (-x * 181 + y * 181) / 256;
             new_y = (-x * 181 - y * 181) / 256;
             break;
 
         case 6:
-            /* 270 degrees */
             new_x = y;
             new_y = -x;
             break;
 
         case 7:
-            /* 315 degrees */
             new_x = (x * 181 + y * 181) / 256;
             new_y = (-x * 181 + y * 181) / 256;
             break;
@@ -106,6 +138,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
 
 #define ROTATION_CHANNEL 0
 #define ROTATION_VALUE_ID 1
+#define SCROLL_SPEED_VALUE_ID 2
+#define DPI_VALUE_ID 3
 
 void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
     uint8_t *command_id = &(data[0]);
@@ -123,18 +157,39 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 if (value_id_and_data[1] < 8) {
                     rotation_index = value_id_and_data[1];
                 }
+            } else if (value_id_and_data[0] == SCROLL_SPEED_VALUE_ID) {
+                if (value_id_and_data[1] < ARRAY_SIZE(scroll_speed_divisors)) {
+                    scroll_speed_index = value_id_and_data[1];
+                    apply_scroll_speed();
+                }
+            } else if (value_id_and_data[0] == DPI_VALUE_ID) {
+                if (value_id_and_data[1] < 5) {
+                    keyboard_config.dpi_config = value_id_and_data[1];
+                    eeconfig_update_kb(keyboard_config.raw);
+                    pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
+                }
             }
             break;
 
         case id_custom_get_value:
             if (value_id_and_data[0] == ROTATION_VALUE_ID) {
                 value_id_and_data[1] = rotation_index;
+            } else if (value_id_and_data[0] == SCROLL_SPEED_VALUE_ID) {
+                value_id_and_data[1] = scroll_speed_index;
+            } else if (value_id_and_data[0] == DPI_VALUE_ID) {
+                value_id_and_data[1] = keyboard_config.dpi_config;
             }
             break;
 
-        case id_custom_save:
-            eeconfig_update_user(rotation_index);
+        case id_custom_save: {
+            nano2_user_config_t config;
+            config.rotation_index = rotation_index;
+            config.scroll_speed_index = scroll_speed_index;
+            config.raw &= 0x0000FFFF;
+
+            eeconfig_update_user(config.raw);
             break;
+        }
 
         default:
             *command_id = id_unhandled;
@@ -179,6 +234,25 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         case ROT_315:
             rotation_index = 7;
             return false;
+
+        case SCROLL_SPEED: {
+            scroll_speed_index++;
+
+            if (scroll_speed_index >= ARRAY_SIZE(scroll_speed_divisors)) {
+                scroll_speed_index = SCROLL_SPEED_NORMAL;
+            }
+
+            apply_scroll_speed();
+
+            nano2_user_config_t config;
+            config.rotation_index = rotation_index;
+            config.scroll_speed_index = scroll_speed_index;
+            config.raw &= 0x0000FFFF;
+
+            eeconfig_update_user(config.raw);
+
+            return false;
+        }
 
         default:
             return true;
