@@ -2,65 +2,42 @@
 
 Custom QMK/VIA firmware for the **Ploopy Nano 2 Rev2.003**.
 
-This repository extends the existing Ploopy firmware with a configurable **VIA / Raw HID interface**, **Scroll Lock / Drag Scroll integration**, **pointer rotation**, **Scroll Speed configuration**, and **DPI configuration**.
+This project adds useful controls to the Nano 2.
 
 ### VIA Configuration
 
-The Nano 2 exposes all three user-configurable settings directly under **Ploopy Settings** in VIA:
+In VIA, open **Ploopy Settings** to change:
 
-- **Rotation**
-- **Scroll Speed**
-- **DPI**
+* **Rotation**
+* **Scroll Speed**
+* **DPI**
 
-These settings are persistent and can be changed through VIA without rebuilding the firmware.
+These settings are saved automatically.
 
-The project is designed around a single Nano-2 firmware configuration. The different functions are integrated into the same firmware rather than maintained as separate keymaps.
+The Nano 2 uses one firmware configuration for all of these features.
 
 ---
 
 ## Current Features
 
-The current Nano-2 firmware provides:
+The Nano 2 firmware provides:
 
-* **VIA support**
-* **Raw HID support**
-* **Scroll Lock / Drag Scroll control**
-* **Scroll Lock LED state integration**
-* **Configurable pointer rotation**
-* **Persistent rotation configuration through VIA EEPROM**
-* **Configurable Scroll Speed through VIA**
-* **Persistent Scroll Speed configuration**
-* **Configurable DPI through VIA**
-* **Persistent DPI configuration**
-* **VIA device definition for the Nano 2**
+* **VIA**
+* **Drag Scroll**
+* **Scroll Lock**
+* **Pointer Rotation**
+* **Scroll Speed**
+* **DPI**
 
-The firmware is based on the existing Ploopy pointing-device implementation rather than replacing it.
+The settings are saved, so they stay after the Nano 2 is unplugged.
 
----
-
-# Architecture
-
-The project has three related paths:
-
-1. **Control path** - the Corne and `DragScroll-HID` control the Ploopy's Drag Scroll state through Raw HID.
-2. **Scroll Lock / LED state path** - the common Ploopy firmware receives the host Scroll Lock LED state through `led_update_kb()` and uses `led_state.scroll_lock` to update `is_drag_scroll`.
-3. **Pointing-data path** - the Nano 2 transforms the pointing-device X/Y coordinates before they enter the existing Ploopy processing.
-
-![Ploopy-VIA Architecture](_Firmware/Nano-2/architecture.svg)
-
-The important architectural requirement is that **pointer rotation is applied to the pointing-device X/Y coordinates before they reach the existing Ploopy processing**.
-
-This means that normal pointer movement and Drag Scroll operate in the same rotated coordinate system.
-
-The Raw HID control path does not directly implement the Drag Scroll engine. The bridge sends a command to the Nano 2, and the Nano 2 updates `is_drag_scroll`. The common Ploopy firmware also maps the host Scroll Lock state to `is_drag_scroll` through `led_update_kb()`, so the host Scroll Lock state remains integrated with the existing Drag Scroll mechanism. The existing Ploopy Drag Scroll engine then uses `is_drag_scroll` as its state.
-
-The project deliberately keeps the existing Ploopy Drag Scroll engine as the source of truth rather than creating a second implementation.
+The project uses the normal Ploopy firmware and adds these controls to it.
 
 ---
 
 # Ploopy Nano 2
 
-The Nano 2 firmware is based on the Ploopy Nano 2 Rev2.003 QMK keyboard definition:
+The Nano 2 firmware uses the Ploopy Nano 2 Rev2.003 definition:
 
 `keyboards/ploopyco/nano_2/rev2_003/`
 
@@ -68,7 +45,7 @@ The custom firmware uses a single keymap:
 
 `keyboards/ploopyco/nano_2/rev2_003/keymaps/default/`
 
-The custom keymap contains the integrated functionality for:
+The Nano 2 keymap contains:
 
 * VIA
 * Raw HID
@@ -88,7 +65,7 @@ The VIA device definition is:
 
 `_Firmware/Nano-2/nano2.json`
 
-This definition describes the Nano 2 to VIA and allows the firmware's keymap and custom keycodes to be configured through the VIA interface.
+This tells VIA how to work with the Nano 2.
 
 ### Ploopy Settings
 
@@ -108,9 +85,9 @@ The Nano-2 button can also be assigned through the VIA keymap to specific functi
 * **Scroll Speed**
 * **Drag Scroll**
 
-These assignments provide direct control of the corresponding functions from the Nano-2 button.
+These buttons control the selected function directly.
 
-**Rotation is configured through Ploopy Settings and is not a Nano-2 button assignment.**
+**Rotation is only changed in Ploopy Settings.**
 
 The VIA custom keycodes are:
 
@@ -118,7 +95,7 @@ The VIA custom keycodes are:
 * **Drag Scroll**
 * **Scroll Speed**
 
-The dropdown settings and the corresponding custom keycodes operate on the same underlying firmware functionality where applicable.
+The VIA settings and buttons control the same functions.
 
 # Scroll Lock / Drag Scroll
 
