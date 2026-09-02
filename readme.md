@@ -2,7 +2,7 @@
 
 Custom QMK/VIAL firmware for the **Ploopy Nano 2 Rev2.003**.
 
-This repository extends the existing Ploopy firmware with a configurable **VIA / Raw HID interface**, **Scroll Lock / Drag Scroll integration**, and **pointer rotation**.
+This repository extends the existing Ploopy firmware with a configurable **VIA / Raw HID interface**, **Scroll Lock / Drag Scroll integration**, **pointer rotation**, **Scroll Speed configuration**, and **DPI configuration**.
 
 The project is designed around a single Nano-2 firmware configuration. The different functions are integrated into the same firmware rather than maintained as separate keymaps.
 
@@ -18,6 +18,10 @@ The current Nano-2 firmware provides:
 * **Scroll Lock LED state integration**
 * **Configurable pointer rotation**
 * **Persistent rotation configuration through VIA EEPROM**
+* **Configurable Scroll Speed through VIA**
+* **Persistent Scroll Speed configuration**
+* **Configurable DPI through VIA**
+* **Persistent DPI configuration**
 * **VIA device definition for the Nano 2**
 
 The firmware is based on the existing Ploopy pointing-device implementation rather than replacing it.
@@ -26,37 +30,20 @@ The firmware is based on the existing Ploopy pointing-device implementation rath
 
 # Architecture
 
-The project has three main parts:
+The project has two related paths:
 
-```text
-Corne
-  │
-  │ Raw HID Drag Scroll command
-  │
-  ▼
-Corne-Ploopy-Bridge
-  │
-  │ VIA / Raw HID
-  │
-  ▼
-Ploopy Nano 2
-  │
-  ├── Pointer rotation
-  │
-  ▼
-Rotated X / Y
-  │
-  ├── Normal pointer movement
-  │
-  └── Existing Ploopy Drag Scroll
-          │
-          ▼
-     Scroll Lock / LED
-```
+1. **Control path** - the Corne and host bridge control the Ploopy's Drag Scroll state through Raw HID.
+2. **Pointing-data path** - the Nano 2 transforms the pointing-device X/Y coordinates before they enter the existing Ploopy processing.
+
+![Ploopy-VIA Architecture](_Firmware/Nano-2/architecture.svg)
 
 The important architectural requirement is that **pointer rotation is applied to the pointing-device X/Y coordinates before they reach the existing Ploopy processing**.
 
 This means that normal pointer movement and Drag Scroll operate in the same rotated coordinate system.
+
+The Raw HID control path does not directly drive the Drag Scroll engine. The bridge sends a command to the Nano 2, the Nano 2 updates `is_drag_scroll`, and the existing Ploopy Drag Scroll engine uses that state.
+
+The project deliberately keeps the existing Ploopy Drag Scroll engine as the source of truth rather than creating a second implementation.
 
 ---
 
@@ -64,15 +51,11 @@ This means that normal pointer movement and Drag Scroll operate in the same rota
 
 The Nano 2 firmware is based on the Ploopy Nano 2 Rev2.003 QMK keyboard definition:
 
-```text
-keyboards/ploopyco/nano_2/rev2_003/
-```
+`keyboards/ploopyco/nano_2/rev2_003/`
 
 The custom firmware uses a single keymap:
 
-```text
-keyboards/ploopyco/nano_2/rev2_003/keymaps/default/
-```
+`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/`
 
 The custom keymap contains the integrated functionality for:
 
@@ -80,6 +63,8 @@ The custom keymap contains the integrated functionality for:
 * Raw HID
 * Drag Scroll / Scroll Lock control
 * pointer rotation
+* Scroll Speed configuration
+* DPI configuration
 * VIA configuration
 
 There are no separate `scrolllock`, `rotation`, or `full` keymap directories.
@@ -92,13 +77,23 @@ The Nano 2 firmware is configured for VIAL.
 
 The VIAL device definition is:
 
-```text
-_Firmware/Nano-2/nano2.json
-```
+`_Firmware/Nano-2/nano2.json`
 
 This definition describes the Nano 2 to VIAL and allows the firmware's keymap and custom keycodes to be configured through the VIAL interface.
 
-The firmware therefore combines the QMK functionality with a VIAL-compatible configuration without requiring separate firmware variants.
+The VIAL custom keycodes are:
+
+* **DPI Config**
+* **Drag Scroll**
+* **Scroll Speed**
+
+The VIAL device definition also exposes the following settings under **Ploopy Settings -> Basic**:
+
+* **Rotation**
+* **Scroll Speed**
+* **DPI**
+
+The dropdown settings and the corresponding custom keycodes operate on the same firmware functionality where applicable.
 
 ---
 
@@ -112,27 +107,12 @@ Instead, the custom firmware provides an external control path that changes the 
 
 The control flow is:
 
-```text
-Keyboard
-   │
-   │ Raw HID
-   ▼
-via_command_kb()
-   │
-   ▼
-is_drag_scroll
-   │
-   ▼
-Existing Ploopy Drag Scroll
-```
+`Keyboard -> Raw HID -> via_command_kb() -> is_drag_scroll -> Existing Ploopy Drag Scroll`
 
 The Raw HID protocol uses two command bytes:
 
-```text
-'S'  (0x53) → Drag Scroll ON
-
-'s'  (0x73) → Drag Scroll OFF
-```
+* `'S'` (`0x53`) -> Drag Scroll ON
+* `'s'` (`0x73`) -> Drag Scroll OFF
 
 This allows the Corne and the Ploopy to communicate using a very small and stable protocol.
 
@@ -144,18 +124,9 @@ The Scroll Lock state is integrated at the common Ploopy firmware level.
 
 The implementation is located in:
 
-```text
-keyboards/ploopyco/ploopyco.c
-```
+`keyboards/ploopyco/ploopyco.c`
 
-The existing Ploopy LED update hook receives the host Scroll Lock state:
-
-```c
-bool led_update_kb(led_t led_state) {
-    is_drag_scroll = led_state.scroll_lock;
-    return led_update_user(led_state);
-}
-```
+The existing Ploopy LED update hook receives the host Scroll Lock state and updates `is_drag_scroll` accordingly.
 
 This connects the host's Scroll Lock state to the Ploopy's existing Drag Scroll mechanism.
 
@@ -177,27 +148,24 @@ The firmware provides configurable rotation of the pointing-device coordinates.
 
 The supported angles are:
 
-```text
-0°
-45°
-90°
-135°
-180°
-225°
-270°
-315°
-```
+* **0 degrees**
+* **45 degrees**
+* **90 degrees**
+* **135 degrees**
+* **180 degrees**
+* **225 degrees**
+* **270 degrees**
+* **315 degrees**
 
 Rotation is applied to the X/Y coordinates before normal Ploopy pointing-device processing.
 
-For example, the 90° rotation uses:
+For example, the 90-degree rotation uses:
 
-```text
-X' = Y
-Y' = -X
-```
+`X' = Y`
 
-The 45° rotations use an integer approximation of `1 / sqrt(2)` suitable for the microcontroller.
+`Y' = -X`
+
+The 45-degree rotations use an integer approximation of `1 / sqrt(2)` suitable for the microcontroller.
 
 The rotation implementation is part of the main Nano-2 firmware rather than a separate keymap.
 
@@ -209,13 +177,91 @@ The selected rotation is configurable through VIA.
 
 The rotation value is stored using VIA's custom EEPROM configuration:
 
-```text
-VIA_EEPROM_CUSTOM_CONFIG_SIZE = 1
-```
+`VIA_EEPROM_CUSTOM_CONFIG_SIZE = 1`
 
 This allows the selected rotation to persist across firmware restarts.
 
 The firmware can therefore retain the user's selected physical orientation without requiring the rotation to be hard-coded into the firmware.
+
+Rotation can be changed through the **Ploopy Settings -> Basic -> Rotation** VIAL dropdown.
+
+The firmware also contains internal rotation keycodes used by the keymap implementation, but the VIAL device definition exposes the configuration through the Rotation dropdown rather than as additional VIAL custom keycodes.
+
+---
+
+# Scroll Speed
+
+The Nano 2 firmware provides configurable Drag Scroll speed.
+
+Scroll Speed is implemented by changing the runtime scaling used by the existing Ploopy Drag Scroll engine.
+
+The original Drag Scroll implementation remains responsible for generating the scroll events.
+
+The available settings are:
+
+* **Normal**
+* **Slow**
+* **Slower**
+* **Fast**
+* **Faster**
+
+Scroll Speed can be changed in two ways:
+
+* through the **Ploopy Settings -> Basic -> Scroll Speed** VIAL dropdown
+* through the **Scroll Speed** VIAL custom keycode
+
+The custom keycode cycles through the available speed settings.
+
+The selected Scroll Speed is stored in the Nano-2 user configuration and is restored when the firmware starts.
+
+The VIA setting and the custom keycode therefore control the same underlying runtime setting.
+
+The implementation intentionally does not replace or duplicate the existing Ploopy Drag Scroll engine.
+
+No internal Scroll Speed divisor values are exposed in the documentation because those are implementation details and may change independently of the user-facing settings.
+
+---
+
+# DPI Configuration
+
+The Nano 2 retains the existing Ploopy DPI configuration mechanism.
+
+DPI can be selected through:
+
+* the **Ploopy Settings -> Basic -> DPI** VIAL dropdown
+* the existing **DPI Config** VIAL custom keycode
+
+The selected DPI uses the existing Ploopy DPI configuration and is stored persistently in EEPROM.
+
+The available DPI options are defined by the firmware rather than duplicated in this documentation.
+
+This keeps the documentation valid if the firmware's DPI options are changed in the future.
+
+The physical Nano 2 DPI button behavior remains unchanged.
+
+The VIA DPI configuration is an additional configuration path and does not replace the existing physical-button DPI cycling.
+
+---
+
+# VIA Configuration and Persistence
+
+The Nano 2 configuration exposed through VIAL consists of:
+
+* **Rotation**
+* **Scroll Speed**
+* **DPI**
+
+These settings are available under **Ploopy Settings -> Basic**.
+
+The configuration is handled by the Nano-2 firmware.
+
+Rotation and Scroll Speed use the Nano-2 custom configuration storage.
+
+DPI continues to use the existing Ploopy DPI configuration storage.
+
+The selected settings are restored when the firmware starts.
+
+This means the user can configure the Nano 2 through VIAL without needing to rebuild the firmware for normal configuration changes.
 
 ---
 
@@ -225,35 +271,11 @@ Rotation and Drag Scroll must use the same coordinate system.
 
 The processing order is:
 
-```text
-Physical sensor X / Y
-        │
-        ▼
-Pointer rotation
-        │
-        ▼
-Rotated X / Y
-        │
-        ├──────────────► Normal pointer movement
-        │
-        └──────────────► Existing Ploopy Drag Scroll
-```
+`Physical sensor X/Y -> Pointer rotation -> Rotated X/Y -> Normal pointer movement / Existing Ploopy Drag Scroll`
 
-For example:
+For example, with a 90-degree rotation:
 
-```text
-Physical X / Y
-      │
-      ▼
-   90° rotation
-      │
-      ▼
-Rotated X / Y
-      │
-      ├── Pointer movement
-      │
-      └── Drag Scroll
-```
+`Physical X/Y -> 90-degree rotation -> Rotated X/Y -> Pointer movement / Drag Scroll`
 
 This is important because rotating only normal pointer movement while leaving Drag Scroll unrotated would produce two different coordinate systems.
 
@@ -265,34 +287,12 @@ The intended behavior is that **Drag Scroll follows exactly the same physical ro
 
 The Drag Scroll protocol intentionally uses two simple command bytes:
 
-```text
-0x53 / 'S' → DRAG_SCROLL_ON
-
-0x73 / 's' → DRAG_SCROLL_OFF
-```
+* `0x53 / 'S'` -> `DRAG_SCROLL_ON`
+* `0x73 / 's'` -> `DRAG_SCROLL_OFF`
 
 The complete communication path is:
 
-```text
-Corne
-  │
-  │ 'S' / 's'
-  ▼
-Corne-Ploopy-Bridge
-  │
-  │ VIA / Raw HID
-  ▼
-Ploopy Nano 2
-  │
-  ▼
-via_command_kb()
-  │
-  ▼
-is_drag_scroll
-  │
-  ▼
-Existing Ploopy Drag Scroll
-```
+`Corne -> 'S' / 's' -> Corne-Ploopy-Bridge -> VIA / Raw HID -> Ploopy Nano 2 -> via_command_kb() -> is_drag_scroll -> Existing Ploopy Drag Scroll`
 
 The keyboard determines when Drag Scroll should change.
 
@@ -308,20 +308,14 @@ The custom Nano-2 firmware is intentionally kept as a single integrated firmware
 
 The important files are:
 
-```text
-_Firmware/Nano-2/
-    ├── BuildFirmware.sh
-    └── nano2.json
-
-keyboards/ploopyco/
-    ├── ploopyco.c
-    │
-    └── nano_2/
-        └── rev2_003/
-            └── keymaps/
-                └── default/
-                    └── keymap.c
-```
+* `_Firmware/Nano-2/BuildFirmware.sh`
+* `_Firmware/Nano-2/nano2.json`
+* `_Firmware/Nano-2/architecture.svg`
+* `keyboards/ploopyco/ploopyco.h`
+* `keyboards/ploopyco/ploopyco.c`
+* `keyboards/ploopyco/nano_2/config.h`
+* `keyboards/ploopyco/nano_2/rev2_003/keymaps/default/config.h`
+* `keyboards/ploopyco/nano_2/rev2_003/keymaps/default/keymap.c`
 
 The exact contents of the Nano-2 keymap may evolve as additional functionality is added.
 
@@ -333,29 +327,21 @@ The architecture deliberately avoids maintaining multiple firmware variants for 
 
 The Nano-2 firmware is built from the repository using the project build script:
 
-```bash
-./_Firmware/Nano-2/BuildFirmware.sh
-```
+`./_Firmware/Nano-2/BuildFirmware.sh`
 
 The script handles the firmware build using the Nano-2 Rev2.003 target and the project's current configuration.
 
 The direct QMK target is:
 
-```text
-ploopyco/nano_2/rev2_003
-```
+`ploopyco/nano_2/rev2_003`
 
 The active keymap is:
 
-```text
-default
-```
+`default`
 
 The equivalent direct QMK build command is:
 
-```bash
-qmk compile -kb ploopyco/nano_2/rev2_003 -km default
-```
+`qmk compile -kb ploopyco/nano_2/rev2_003 -km default`
 
 ---
 
@@ -363,9 +349,7 @@ qmk compile -kb ploopyco/nano_2/rev2_003 -km default
 
 The firmware can be flashed using the QMK CLI:
 
-```bash
-qmk flash -kb ploopyco/nano_2/rev2_003 -km default
-```
+`qmk flash -kb ploopyco/nano_2/rev2_003 -km default`
 
 Alternatively, if the build process produces a UF2 firmware file, the Nano 2 can be placed into its bootloader and the generated `.uf2` file can be copied to the bootloader volume.
 
@@ -379,21 +363,7 @@ The project is now developed as a **single firmware**.
 
 The development cycle is:
 
-```text
-Modify firmware
-      │
-      ▼
-Build Nano 2 firmware
-      │
-      ▼
-Flash Nano 2
-      │
-      ▼
-Test VIAL / pointer / Drag Scroll
-      │
-      ▼
-Commit verified changes
-```
+`Modify firmware -> Build Nano 2 firmware -> Flash Nano 2 -> Test VIAL / pointer / Drag Scroll -> Commit verified changes`
 
 Individual features are no longer isolated into separate keymap directories.
 
@@ -409,6 +379,7 @@ The normal Ploopy firmware continues to provide:
 * Drag Scroll implementation
 * Scroll Lock handling
 * Scroll Lock LED behavior
+* DPI configuration and physical DPI control
 * other Ploopy functionality
 
 This project adds:
@@ -416,6 +387,8 @@ This project adds:
 * VIAL configuration
 * Raw HID Drag Scroll control
 * configurable pointer rotation
+* configurable Scroll Speed
+* VIA DPI configuration
 * Nano-2-specific firmware integration
 
 The design goal is to reuse the existing Ploopy functionality wherever possible instead of duplicating it.
@@ -426,24 +399,21 @@ The design goal is to reuse the existing Ploopy functionality wherever possible 
 
 The relevant parts of the repository are:
 
-```text
-Ploopy-VIA/
+* `_Firmware/Nano-2/`
+  * `BuildFirmware.sh`
+  * `nano2.json`
+  * `architecture.svg`
 
-├── _Firmware/
-│   └── Nano-2/
-│       ├── BuildFirmware.sh
-│       └── nano2.json
-│
-└── keyboards/
-    └── ploopyco/
-        ├── ploopyco.c
-        │
-        └── nano_2/
-            └── rev2_003/
-                └── keymaps/
-                    └── default/
-                        └── keymap.c
-```
+* `keyboards/ploopyco/`
+  * `ploopyco.h`
+  * `ploopyco.c`
+  * `nano_2/`
+    * `config.h`
+    * `rev2_003/`
+      * `keymaps/`
+        * `default/`
+          * `config.h`
+          * `keymap.c`
 
 The common Ploopy implementation remains separate from the Nano-2-specific keymap.
 
@@ -455,19 +425,16 @@ This allows the custom Nano-2 functionality to build on top of the existing Ploo
 
 The complete system uses three projects.
 
-## Corne — QMK / VIAL
+## Corne - QMK / VIAL
 
 The QMK/VIAL Corne firmware contains the custom Drag Scroll module.
 
 The module generates the Raw HID commands used by the Ploopy:
 
-```text
-'S' → Drag Scroll ON
+* `'S'` -> Drag Scroll ON
+* `'s'` -> Drag Scroll OFF
 
-'s' → Drag Scroll OFF
-```
-
-## Corne — ZMK
+## Corne - ZMK
 
 The ZMK implementation provides equivalent Drag Scroll behavior using ZMK.
 
@@ -485,7 +452,7 @@ The bridge is maintained separately from this repository.
 
 # Design Goals
 
-The project follows a few simple principles:
+The project follows a few simple principles.
 
 ### Reuse the Ploopy firmware
 
@@ -495,21 +462,20 @@ The existing Ploopy Drag Scroll implementation should remain the source of truth
 
 The external Drag Scroll protocol uses only two command bytes:
 
-```text
-'S' / 's'
-```
+`'S' / 's'`
 
 ### Keep pointer and Drag Scroll coordinates consistent
 
 Rotation is applied before both normal pointer movement and Drag Scroll processing.
 
-### Use one firmware configuration
+### Make configuration accessible
+
+DPI, Scroll Speed, and Rotation can be configured through VIA while retaining the existing physical DPI control and direct custom-keycode access where appropriate.
+
+### Keep one firmware configuration
 
 The Nano 2 is developed as one integrated firmware rather than a collection of feature-specific keymaps.
 
 ### Keep the customization isolated
 
-The project adds only the functionality required for VIA control, Raw HID communication, and pointer rotation while leaving the rest of the Ploopy firmware intact.
-
-```
-```
+The project adds only the functionality required for VIA control, Raw HID communication, pointer rotation, Scroll Speed configuration, and Nano-2-specific DPI configuration while leaving the rest of the Ploopy firmware intact.
