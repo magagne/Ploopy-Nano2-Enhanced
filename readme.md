@@ -143,7 +143,7 @@ The Scroll Lock / Drag Scroll behavior has been **tested and confirmed working o
 
 ---
 
-# Pointer Rotation
+# pointer rotation
 
 The firmware provides configurable rotation of the pointing-device coordinates.
 
