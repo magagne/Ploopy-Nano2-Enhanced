@@ -63,7 +63,7 @@ The custom keymap contains the integrated functionality for:
 * VIA
 * Raw HID
 * Drag Scroll / Scroll Lock control
-* pointer rotation
+* Pointer rotation
 * Scroll Speed configuration
 * DPI configuration
 * VIA configuration
