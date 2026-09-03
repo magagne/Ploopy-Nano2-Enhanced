@@ -30,17 +30,17 @@ enum rotation_angle {
 };
 
 enum scroll_speed {
-    SCROLL_SPEED_NORMAL = 0,
+    SCROLL_SPEED_SLOWER = 0,
     SCROLL_SPEED_SLOW,
-    SCROLL_SPEED_SLOWER,
+    SCROLL_SPEED_NORMAL,
     SCROLL_SPEED_FAST,
     SCROLL_SPEED_FASTER,
 };
 
 static const uint8_t scroll_speed_divisors[] = {
-    [SCROLL_SPEED_NORMAL] = 64,
-    [SCROLL_SPEED_SLOW]   = 96,
     [SCROLL_SPEED_SLOWER] = 128,
+    [SCROLL_SPEED_SLOW]   = 96,
+    [SCROLL_SPEED_NORMAL] = 64,
     [SCROLL_SPEED_FAST]   = 48,
     [SCROLL_SPEED_FASTER] = 32,
 };

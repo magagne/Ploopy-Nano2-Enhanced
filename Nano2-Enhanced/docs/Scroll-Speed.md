@@ -4,11 +4,11 @@ Scroll Speed controls how fast the ball scrolls when DragScroll is active.
 
 The Nano2 has five scroll speed settings:
 
-    SLOWER
-    SLOW
-    NORMAL
-    FAST
-    FASTER
+    0 - SLOWER = 128
+    1 - SLOW = 96
+    2 - NORMAL = 64
+    3 - FAST = 48
+    4 - FASTER = 32
 
 ## Speed settings
 
@@ -52,18 +52,7 @@ Each press moves to the next setting.
 
 The cycle is:
 
-    NORMAL
-       ↓
-    SLOW
-       ↓
-    SLOWER
-       ↓
-    FAST
-       ↓
-    FASTER
-       ↓
-    NORMAL
-
+    SLOWER → SLOW → NORMAL → FAST → FASTER → SLOWER
 The selected speed is applied immediately.
 
 The selected speed is also saved.
@@ -74,12 +63,13 @@ The configuration menu can select the scroll speed directly.
 
 The firmware uses these values:
 
-    0 = NORMAL
-    1 = SLOW
-    2 = SLOWER
-    3 = FAST
-    4 = FASTER
+    0 - SLOWER = 128
+    1 - SLOW = 96
+    2 - NORMAL = 64
+    3 - FAST = 48
+    4 - FASTER = 32
 
+The default is 2 (NORMAL).
 ## Saving
 
 The selected scroll speed is stored in the Nano2 user configuration.

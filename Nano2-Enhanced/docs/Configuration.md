@@ -37,9 +37,9 @@ Default: **900 DPI**.
 
 | Value | Speed | Divisor |
 |---:|---|---:|
-| 0 | Normal | 64 |
+| 0 | Slower | 128 |
 | 1 | Slow | 96 |
-| 2 | Slower | 128 |
+| 2 | Normal | 64 |
 | 3 | Fast | 48 |
 | 4 | Faster | 32 |
 

@@ -88,7 +88,7 @@
               "type": "dropdown",
               "options": [
                 [
-                  "Normal",
+                  "Slower",
                   0
                 ],
                 [
@@ -96,7 +96,7 @@
                   1
                 ],
                 [
-                  "Slower",
+                  "Normal",
                   2
                 ],
                 [

@@ -114,12 +114,11 @@ The Nano2 can change the speed of scrolling.
 
 There are five settings:
 
-    NORMAL
-    SLOW
-    SLOWER
-    FAST
-    FASTER
-
+    0 - SLOWER = 128
+    1 - SLOW = 96
+    2 - NORMAL = 64
+    3 - FAST = 48
+    4 - FASTER = 32
 Scroll Speed can be selected from the configuration menu.
 
 See [Scroll-Speed.md](Scroll-Speed.md).
