@@ -13,15 +13,15 @@ Compared with the standard Nano2 firmware:
 
 The Nano2 can use five DPI settings:
 
-    600
-    900
-    1200
-    1600
-    2400
+| Value | DPI |
+|---:|---:|
+| 0 | 600 |
+| 1 | 900 |
+| 2 | 1200 |
+| 3 | 1600 |
+| 4 | 2400 |
 
-The default is:
-
-    900 DPI
+The default is **900 DPI**.
 
 DPI can be changed with the Nano2 button or selected from the configuration menu.
 
@@ -93,14 +93,16 @@ The Nano2 can change the direction of pointer movement.
 
 There are eight rotation settings:
 
-    0°
-    45°
-    90°
-    135°
-    180°
-    225°
-    270°
-    315°
+| Value | Rotation |
+|---:|---:|
+| 0 | 0° |
+| 1 | 45° |
+| 2 | 90° |
+| 3 | 135° |
+| 4 | 180° |
+| 5 | 225° |
+| 6 | 270° |
+| 7 | 315° |
 
 Rotation can be selected from the configuration menu.
 
