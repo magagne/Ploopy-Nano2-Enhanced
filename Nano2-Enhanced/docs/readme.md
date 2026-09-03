@@ -1,13 +1,11 @@
-# Ploopy Nano2
+# Ploopy Nano2 Enhanced
 
-This project adds extra features to the Ploopy Nano2.
+Compared with the standard Nano2 firmware:
 
-The goal is simple:
-
-- make the Nano2 comfortable to use
-- make the main settings easy to change
-- keep everything in one firmware
-- keep the project easy to understand
+- **Keyboard-triggered DragScroll**
+- **More DPI choices**
+- **Pointer rotation**
+- **Adjustable scroll speed**
 
 ## 1. Features
 
