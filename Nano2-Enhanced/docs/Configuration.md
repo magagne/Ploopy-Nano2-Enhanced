@@ -1,6 +1,6 @@
 # Configuration
 
-The Nano-2 has settings for:
+The Nano2 has settings for:
 
     DPI
     Rotation
@@ -47,24 +47,24 @@ Scroll Speed uses five settings:
 
 ## Configuration values
 
-The Nano-2 configuration menu uses three value IDs:
+The Nano2 configuration menu uses three value IDs:
 
     1 = Rotation
     2 = Scroll Speed
     3 = DPI
 
-These values are handled by the Nano-2 firmware.
+These values are handled by the Nano2 firmware.
 
 ## Saving
 
-The Nano-2 saves:
+The Nano2 saves:
 
     Rotation
     Scroll Speed
 
 in the user configuration.
 
-The firmware reads these settings when the Nano-2 starts.
+The firmware reads these settings when the Nano2 starts.
 
 DPI is stored separately in the keyboard configuration.
 
@@ -95,7 +95,7 @@ A keycode can be placed on a key or button by a keymap.
 
 ## Default keymap
 
-The default Nano-2 keymap currently contains:
+The default Nano2 keymap currently contains:
 
     DPI_CONFIG
 
@@ -111,7 +111,7 @@ The other configuration keycodes are provided by the firmware but are not placed
            │
            └── Scroll Speed ────► Scroll speed
 
-The configuration menu changes the Nano-2 settings directly.
+The configuration menu changes the Nano2 settings directly.
 
 ## Source
 

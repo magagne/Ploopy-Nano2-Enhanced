@@ -1,6 +1,6 @@
-# Nano-2 Button
+# Nano2 Button
 
-The Nano-2 button can activate DragScroll directly.
+The Nano2 button can activate DragScroll directly.
 
 This is a separate path from the keyboard methods.
 
@@ -9,14 +9,14 @@ The idea is simple:
     NANO-2 BUTTON
           │
           ▼
-    Nano-2 firmware
+    Nano2 firmware
           │
           ▼
       DragScroll
 
 ## What happens
 
-The Nano-2 button can be configured to control DragScroll.
+The Nano2 button can be configured to control DragScroll.
 
 When the button is pressed:
 
@@ -30,14 +30,14 @@ The button can therefore be used as a toggle.
 
 ## Independent path
 
-The Nano-2 button does not use:
+The Nano2 button does not use:
 
 - `dragscroll-hid`
 - `dragscroll-led`
 - ScrollLock
 - the keyboard
 
-The Nano-2 firmware controls the DragScroll state directly.
+The Nano2 firmware controls the DragScroll state directly.
 
 ## Three ways to activate DragScroll
 
@@ -53,7 +53,7 @@ The complete picture is:
     NANO-2 BUTTON
         │
         ▼
-    Nano-2 firmware
+    Nano2 firmware
         │
         ▼
     DragScroll
@@ -66,15 +66,15 @@ Only the way DragScroll is activated is different.
 
 ## Configuration
 
-The Nano-2 button can be assigned to the DragScroll function.
+The Nano2 button can be assigned to the DragScroll function.
 
-The button behavior is handled by the Nano-2 firmware.
+The button behavior is handled by the Nano2 firmware.
 
-The exact key or button configuration belongs to the Nano-2 firmware configuration and is documented separately.
+The exact key or button configuration belongs to the Nano2 firmware configuration and is documented separately.
 
 ## Important
 
-The Nano-2 button is a direct hardware path.
+The Nano2 button is a direct hardware path.
 
 It does not need a host-side bridge.
 

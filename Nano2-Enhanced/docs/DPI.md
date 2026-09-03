@@ -2,7 +2,7 @@
 
 DPI controls how fast the Ploopy pointer moves.
 
-The Nano-2 firmware has five DPI settings:
+The Nano2 firmware has five DPI settings:
 
     600
     900
@@ -14,10 +14,10 @@ The Nano-2 firmware has five DPI settings:
 
 The DPI can be changed with:
 
-- the Nano-2 button
+- the Nano2 button
 - the configuration menu
 
-### Nano-2 button
+### Nano2 button
 
 The button can cycle through the DPI settings.
 
@@ -87,7 +87,7 @@ The selected value is then applied with:
 
     DPI SETTING
          │
-         ├── Nano-2 button ──► cycle
+         ├── Nano2 button ──► cycle
          │
          └── Configuration menu ──► select
                                       │

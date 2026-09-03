@@ -1,10 +1,10 @@
-# Ploopy Nano-2
+# Ploopy Nano2
 
-This project adds extra features to the Ploopy Nano-2.
+This project adds extra features to the Ploopy Nano2.
 
 The goal is simple:
 
-- make the Nano-2 comfortable to use
+- make the Nano2 comfortable to use
 - make the main settings easy to change
 - keep everything in one firmware
 - keep the project easy to understand
@@ -13,7 +13,7 @@ The goal is simple:
 
 ### 1.1 DPI
 
-The Nano-2 can use five DPI settings:
+The Nano2 can use five DPI settings:
 
     600
     900
@@ -25,13 +25,13 @@ The default is:
 
     900 DPI
 
-DPI can be changed with the Nano-2 button or selected from the configuration menu.
+DPI can be changed with the Nano2 button or selected from the configuration menu.
 
 See [DPI.md](DPI.md).
 
 ### 1.2 DragScroll
 
-The Nano-2 can work in two main ways:
+The Nano2 can work in two main ways:
 
 - **Pointer** — move the mouse pointer
 - **Scrolling** — move the ball to scroll
@@ -81,17 +81,17 @@ This method is currently supported on Windows only.
 
 See [DragScroll-LED.md](DragScroll-LED.md).
 
-#### Nano-2 button
+#### Nano2 button
 
-The Nano-2 button can activate DragScroll directly.
+The Nano2 button can activate DragScroll directly.
 
 This path is independent from the keyboard methods.
 
-See [Nano-2-Button.md](Nano-2-Button.md).
+See [Nano2-Button.md](Nano2-Button.md).
 
 ### 1.3 Rotation
 
-The Nano-2 can change the direction of pointer movement.
+The Nano2 can change the direction of pointer movement.
 
 There are eight rotation settings:
 
@@ -110,7 +110,7 @@ See [Rotation.md](Rotation.md).
 
 ### 1.4 Scroll Speed
 
-The Nano-2 can change the speed of scrolling.
+The Nano2 can change the speed of scrolling.
 
 There are five settings:
 
@@ -134,11 +134,11 @@ The configuration menu can change:
 
 The firmware also provides keycodes for these settings.
 
-The default Nano-2 keymap currently places:
+The default Nano2 keymap currently places:
 
     DPI_CONFIG
 
-on the Nano-2 button.
+on the Nano2 button.
 
 Other configuration keycodes are available in the firmware but are not placed on a key in the default keymap.
 
@@ -146,7 +146,7 @@ See [Configuration.md](Configuration.md).
 
 ## 3. Firmware
 
-The project uses one firmware containing all Nano-2 features.
+The project uses one firmware containing all Nano2 features.
 
 Build the firmware with:
 
@@ -154,4 +154,4 @@ Build the firmware with:
 
 There are no separate firmware builds for the individual features.
 
-The same firmware contains the complete Nano-2 configuration.
+The same firmware contains the complete Nano2 configuration.

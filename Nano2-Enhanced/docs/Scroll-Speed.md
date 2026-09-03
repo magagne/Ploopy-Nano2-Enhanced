@@ -2,7 +2,7 @@
 
 Scroll Speed controls how fast the ball scrolls when DragScroll is active.
 
-The Nano-2 has five scroll speed settings:
+The Nano2 has five scroll speed settings:
 
     SLOWER
     SLOW
@@ -82,9 +82,9 @@ The firmware uses these values:
 
 ## Saving
 
-The selected scroll speed is stored in the Nano-2 user configuration.
+The selected scroll speed is stored in the Nano2 user configuration.
 
-The firmware reads it when the Nano-2 starts.
+The firmware reads it when the Nano2 starts.
 
 ## Firmware
 

@@ -2,7 +2,7 @@
 
 Rotation changes the direction of the pointer.
 
-The Nano-2 has eight rotation settings:
+The Nano2 has eight rotation settings:
 
     0°
     45°
@@ -35,7 +35,7 @@ The settings are:
 
 ## How it works
 
-The Nano-2 receives the ball movement:
+The Nano2 receives the ball movement:
 
     Ball
       │
@@ -88,9 +88,9 @@ The rotation is applied to the pointer movement with:
 
 ## Saving
 
-The rotation setting is stored in the Nano-2 user configuration.
+The rotation setting is stored in the Nano2 user configuration.
 
-The firmware reads the saved rotation when the Nano-2 starts.
+The firmware reads the saved rotation when the Nano2 starts.
 
 The configuration can also be saved through the configuration menu.
 
