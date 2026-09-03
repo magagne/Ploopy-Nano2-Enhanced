@@ -1,4 +1,4 @@
-# <font color="#D71920">Ploopy Nano2 Enhanced</font>
+# Ploopy Nano2 Enhanced
 
 Compared with the standard Nano2 firmware:
 
@@ -7,9 +7,9 @@ Compared with the standard Nano2 firmware:
 - **Pointer rotation**
 - **Adjustable scroll speed**
 
-## <font color="#D71920">1. Features</font>
+## 1. Features
 
-### <font color="#D71920">1.1 DPI</font>
+### 1.1 DPI
 
 The Nano2 can use five DPI settings:
 
@@ -27,7 +27,7 @@ DPI can be changed with the Nano2 button or selected from the configuration menu
 
 See [DPI.md](DPI.md).
 
-### <font color="#D71920">1.2 DragScroll</font>
+### 1.2 DragScroll
 
 The Nano2 can work in two main ways:
 
@@ -60,7 +60,7 @@ There are several ways to activate DragScroll.
 
 The **ScrollLock LED state** method (`dragscroll-led`) is currently supported on **Windows only**. It is not supported on Mac.
 
-#### <font color="#D71920">dragscroll-hid</font>
+#### dragscroll-hid
 
 `dragscroll-hid` uses a HID key code to activate DragScroll.
 
@@ -71,7 +71,7 @@ It works on:
 
 See [DragScroll-HID.md](DragScroll-HID.md).
 
-#### <font color="#D71920">dragscroll-led</font>
+#### dragscroll-led
 
 `dragscroll-led` uses the keyboard's ScrollLock LED state to activate DragScroll.
 
@@ -79,7 +79,7 @@ This method is currently supported on Windows only.
 
 See [DragScroll-LED.md](DragScroll-LED.md).
 
-#### <font color="#D71920">Nano2 button</font>
+#### Nano2 button
 
 The default Nano2 button changes the DPI setting.
 
@@ -87,7 +87,7 @@ Pressing it cycles through the five DPI settings.
 
 See [Nano2-Button.md](Nano2-Button.md).
 
-### <font color="#D71920">1.3 Rotation</font>
+### 1.3 Rotation
 
 The Nano2 can change the direction of pointer movement.
 
@@ -108,7 +108,7 @@ Rotation can be selected from the configuration menu.
 
 See [Rotation.md](Rotation.md).
 
-### <font color="#D71920">1.4 Scroll Speed</font>
+### 1.4 Scroll Speed
 
 The Nano2 can change the speed of scrolling.
 
@@ -124,7 +124,7 @@ There are five settings:
 
 See [Scroll-Speed.md](Scroll-Speed.md).
 
-## <font color="#D71920">2. Configuration</font>
+## 2. Configuration
 
 The configuration menu can change:
 
@@ -146,7 +146,7 @@ Other configuration keycodes are available in the firmware but are not placed on
 
 See [Configuration.md](Configuration.md).
 
-## <font color="#D71920">3. Firmware</font>
+## 3. Firmware
 
 The project uses one firmware containing all Nano2 features.
 
