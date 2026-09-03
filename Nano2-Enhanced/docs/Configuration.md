@@ -12,11 +12,11 @@ The configuration menu can change these settings.
 
 DPI uses five settings:
 
-    0 = 600
-    1 = 900
-    2 = 1200
-    3 = 1600
-    4 = 2400
+    0 = 600 DPI
+    1 = 900 DPI
+    2 = 1200 DPI
+    3 = 1600 DPI
+    4 = 2400 DPI
 
 The default is:
 
@@ -45,6 +45,14 @@ Scroll Speed uses five settings:
     3 = FAST
     4 = FASTER
 
+The firmware uses these settings to control the scroll divisor:
+
+    0 = 64
+    1 = 96
+    2 = 128
+    3 = 48
+    4 = 32
+
 ## Configuration values
 
 The Nano2 configuration menu uses three value IDs:
@@ -59,37 +67,46 @@ These values are handled by the Nano2 firmware.
 
 The Nano2 saves:
 
+    DPI
     Rotation
     Scroll Speed
 
-in the user configuration.
-
-The firmware reads these settings when the Nano2 starts.
-
-DPI is stored separately in the keyboard configuration.
+These settings are restored when the Nano2 starts.
 
 ## Keycodes
 
-The firmware also provides keycodes for changing settings.
+The firmware provides keycodes for changing settings.
 
 Rotation:
 
-    ROT_0
-    ROT_45
-    ROT_90
-    ROT_135
-    ROT_180
-    ROT_225
-    ROT_270
-    ROT_315
+    ROT_0   = 0
+    ROT_45  = 1
+    ROT_90  = 2
+    ROT_135 = 3
+    ROT_180 = 4
+    ROT_225 = 5
+    ROT_270 = 6
+    ROT_315 = 7
 
 Scroll Speed:
 
     SCROLL_SPEED
 
+    0 = NORMAL
+    1 = SLOW
+    2 = SLOWER
+    3 = FAST
+    4 = FASTER
+
 DPI:
 
     DPI_CONFIG
+
+    0 = 600 DPI
+    1 = 900 DPI
+    2 = 1200 DPI
+    3 = 1600 DPI
+    4 = 2400 DPI
 
 A keycode can be placed on a key or button by a keymap.
 
@@ -105,7 +122,7 @@ The other configuration keycodes are provided by the firmware but are not placed
 
     CONFIGURATION MENU
            │
-           ├── DPI ─────────────► Ploopy DPI
+           ├── DPI ─────────────► DPI setting
            │
            ├── Rotation ────────► Pointer direction
            │
