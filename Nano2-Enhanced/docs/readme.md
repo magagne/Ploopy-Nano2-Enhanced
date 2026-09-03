@@ -128,9 +128,11 @@ See [Scroll-Speed.md](Scroll-Speed.md).
 
 The configuration menu can change:
 
-    DPI
-    Rotation
-    Scroll Speed
+| Setting |
+|---|
+| DPI |
+| Rotation |
+| Scroll Speed |
 
 The firmware also provides keycodes for these settings.
 
