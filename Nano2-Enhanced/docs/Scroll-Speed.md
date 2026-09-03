@@ -2,45 +2,41 @@
 
 Controls how fast the ball scrolls when DragScroll is active.
 
-Five settings:
+Nano2 Enhanced has five scroll speed settings:
 
-- **SLOWER**
-- **SLOW**
-- **NORMAL**
-- **FAST**
-- **FASTER**
+| Value | Speed | Divisor |
+|---:|---|---:|
+| 0 | SLOWER | 128 |
+| 1 | SLOW | 96 |
+| 2 | NORMAL | 64 |
+| 3 | FAST | 48 |
+| 4 | FASTER | 32 |
+
+A larger divisor means slower scrolling.
+
+The default is **NORMAL**.
 
 ## Changing the speed
 
-Use `SCROLL_SPEED` to cycle through the settings:
+Use `SCROLL_SPEED` to cycle through the settings.
 
-SLOWER → SLOW → NORMAL → FAST → FASTER → SLOWER
+The selected speed is applied immediately.
 
-The selected speed is applied immediately and saved.
+The selected speed is saved and restored when the Nano2 starts.
 
 ## Configuration
 
 The speed can also be selected directly from the configuration menu.
 
-Default: **NORMAL**
-
 ## Implementation
 
-The scroll speed values are:
+The current speed is stored in:
 
-| Setting | Divisor |
-|---|---:|
-| SLOWER | 128 |
-| SLOW | 96 |
-| NORMAL | 64 |
-| FAST | 48 |
-| FASTER | 32 |
+`scroll_speed_index`
 
-A larger divisor means slower scrolling.
+The values are stored in:
 
-The setting is stored in `scroll_speed_index`.
-
-The values are stored in `scroll_speed_divisors`.
+`scroll_speed_divisors`
 
 The implementation is in:
 

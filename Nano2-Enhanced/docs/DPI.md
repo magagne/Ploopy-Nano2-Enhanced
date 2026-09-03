@@ -12,42 +12,25 @@ Nano2 Enhanced has five DPI settings:
 
 The default is **900 DPI**.
 
-## Button
+## Changing the DPI
 
-The default Nano2 button is `DPI_CONFIG`.
+The default button action is `DPI_CONFIG`.
 
-Press the button to move to the next DPI setting:
+Press the button to cycle through the DPI settings.
 
-**600 → 900 → 1200 → 1600 → 2400 → 600**
-
-## VIA
+## Configuration
 
 VIA can select any DPI setting directly.
 
-The Nano2 uses VIA:
-
-- Channel `0`
-- DPI Value ID `3`
-
-## Saving
-
-The selected DPI is saved in the keyboard configuration.
-
-It is restored when the Nano2 starts.
+The selected DPI is saved and restored when the Nano2 starts.
 
 ## Implementation
 
-The generic Ploopy firmware provides the DPI system.
+The generic Ploopy firmware stores the current DPI in `keyboard_config.dpi_config`.
 
-It stores the current DPI in:
+It applies the selected DPI with `pointing_device_set_cpi()`.
 
-`keyboard_config.dpi_config`
-
-It applies the selected DPI with:
-
-`pointing_device_set_cpi()`
-
-Nano2 Enhanced sets its own DPI choices and default in:
+Nano2 Enhanced sets its DPI choices and default in:
 
 `keyboards/ploopyco/nano_2/rev2_003/keymaps/default/config.h`
 
@@ -59,6 +42,6 @@ and
 
 `PLOOPY_DPI_DEFAULT`
 
-The generic implementation remains in:
+The generic implementation is in:
 
 `keyboards/ploopyco/ploopyco.c`
