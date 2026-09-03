@@ -4,7 +4,7 @@
 
 extern bool is_drag_scroll;
 
-enum custom_keycodes {
+enum rotation_angle {
     ROT_0 = SAFE_RANGE,
     ROT_45,
     ROT_90,
@@ -21,6 +21,17 @@ enum scroll_speed {
     SCROLL_SPEED_SLOWER,
     SCROLL_SPEED_FAST,
     SCROLL_SPEED_FASTER,
+};
+
+/*
+ * DPI values are defined by PLOOPY_DPI_OPTIONS in config.h.
+ */
+enum dpi_setting {
+    DPI_600 = 0,
+    DPI_900,
+    DPI_1200,
+    DPI_1600,
+    DPI_2400,
 };
 
 static const uint8_t scroll_speed_divisors[] = {
