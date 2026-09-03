@@ -33,6 +33,8 @@ Default: **900 DPI**.
 | 6 | 270° |
 | 7 | 315° |
 
+Default: **0°**.
+
 ### Scroll Speed
 
 | Value | Speed | Divisor |
@@ -42,6 +44,20 @@ Default: **900 DPI**.
 | 2 | Normal | 64 |
 | 3 | Fast | 48 |
 | 4 | Faster | 32 |
+
+Default: **NORMAL**.
+
+## Where values are defined
+
+| Setting | Values are defined in | Behavior |
+|---|---|---|
+| DPI | `config.h` | Generic Ploopy DPI system |
+| Rotation | `keymap.c` | Nano2-specific |
+| Scroll Speed | `keymap.c` | Nano2-specific |
+
+DPI is different because Nano2 uses the existing Ploopy DPI system and only overrides its choices.
+
+`config.h` is the place to add or change DPI choices for Nano2 Enhanced.
 
 ## VIA Configuration
 
@@ -65,8 +81,10 @@ All three settings are restored when the Nano2 starts.
 ## Keycodes
 
 - `DPI_CONFIG` — cycle through DPI settings
-- `ROT_0` to `ROT_315` — set rotation
+- `ROT_0` to `ROT_315` — select rotation
 - `SCROLL_SPEED` — cycle through scroll speeds
+
+The keycodes select the settings. The firmware implements their behavior.
 
 ## Default Button
 
@@ -75,17 +93,3 @@ The Nano2 has one physical button.
 The default keymap assigns that button to `DPI_CONFIG`.
 
 One press changes the DPI to the next setting.
-
-## Implementation
-
-The Nano2-specific configuration is implemented in:
-
-`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/keymap.c`
-
-The Nano2 DPI choices and default are set in:
-
-`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/config.h`
-
-The generic Ploopy DPI system is implemented in:
-
-`keyboards/ploopyco/ploopyco.c`

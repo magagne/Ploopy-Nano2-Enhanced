@@ -12,15 +12,15 @@ Nano2 Enhanced has five scroll speed settings:
 | 3 | FAST | 48 |
 | 4 | FASTER | 32 |
 
-A larger divisor means slower scrolling.
-
 The default is **NORMAL**.
+
+A larger divisor means slower scrolling.
 
 ## Changing the speed
 
 Use `SCROLL_SPEED` to cycle through the settings.
 
-The selected speed is applied immediately.
+The selected speed is applied immediately by the firmware.
 
 The selected speed is saved and restored when the Nano2 starts.
 

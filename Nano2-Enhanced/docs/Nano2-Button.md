@@ -6,7 +6,7 @@ The Nano2 has one physical button.
 
 The default button action is `DPI_CONFIG`.
 
-Press the button to cycle through the DPI settings.
+Press the button to select the next DPI setting.
 
 ## Configuration
 

@@ -15,11 +15,15 @@ Nano2 Enhanced has eight rotation settings:
 | 6 | 270° |
 | 7 | 315° |
 
+The default is **0°**.
+
 ## Configuration
 
 The rotation can be selected from the configuration menu.
 
 The rotation can also be selected directly with the rotation keycodes.
+
+The keycodes select the rotation. The firmware implements the rotation.
 
 The selected rotation is saved and restored when the Nano2 starts.
 
