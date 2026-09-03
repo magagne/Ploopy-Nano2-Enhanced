@@ -83,9 +83,9 @@ See [DragScroll-LED.md](DragScroll-LED.md).
 
 #### Nano2 button
 
-The Nano2 button can activate DragScroll directly.
+The default Nano2 button changes the DPI setting.
 
-This path is independent from the keyboard methods.
+Pressing it cycles through the five DPI settings.
 
 See [Nano2-Button.md](Nano2-Button.md).
 
@@ -114,9 +114,9 @@ The Nano2 can change the speed of scrolling.
 
 There are five settings:
 
-    SLOWER
-    SLOW
     NORMAL
+    SLOW
+    SLOWER
     FAST
     FASTER
 
