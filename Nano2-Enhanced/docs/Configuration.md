@@ -1,141 +1,91 @@
-# Configuration
+# Nano2 Enhanced Configuration
 
-The Nano2 has settings for:
+Nano2 Enhanced has three settings:
 
-    DPI
-    Rotation
-    Scroll Speed
+- **DPI** — controls pointer speed.
+- **Rotation** — rotates the pointer direction.
+- **Scroll Speed** — controls scroll speed.
 
-The configuration menu can change these settings.
+## Settings
 
-## DPI
+### DPI
 
-DPI uses five settings:
+| Value | DPI |
+|---:|---:|
+| 0 | 600 |
+| 1 | 900 |
+| 2 | 1200 |
+| 3 | 1600 |
+| 4 | 2400 |
 
-    0 = 600 DPI
-    1 = 900 DPI
-    2 = 1200 DPI
-    3 = 1600 DPI
-    4 = 2400 DPI
+Default: **900 DPI**.
 
-The default is:
+### Rotation
 
-    900 DPI
+| Value | Rotation |
+|---:|---:|
+| 0 | 0° |
+| 1 | 45° |
+| 2 | 90° |
+| 3 | 135° |
+| 4 | 180° |
+| 5 | 225° |
+| 6 | 270° |
+| 7 | 315° |
 
-## Rotation
+### Scroll Speed
 
-Rotation uses eight settings:
+| Value | Speed | Divisor |
+|---:|---|---:|
+| 0 | Normal | 64 |
+| 1 | Slow | 96 |
+| 2 | Slower | 128 |
+| 3 | Fast | 48 |
+| 4 | Faster | 32 |
 
-    0 = 0°
-    1 = 45°
-    2 = 90°
-    3 = 135°
-    4 = 180°
-    5 = 225°
-    6 = 270°
-    7 = 315°
+## VIA Configuration
 
-## Scroll Speed
+The three settings use one VIA channel:
 
-Scroll Speed uses five settings:
+- Channel `0` — Nano2 settings
+- Value ID `1` — Rotation
+- Value ID `2` — Scroll Speed
+- Value ID `3` — DPI
 
-    0 = NORMAL
-    1 = SLOW
-    2 = SLOWER
-    3 = FAST
-    4 = FASTER
-
-The firmware uses these settings to control the scroll divisor:
-
-    0 = 64
-    1 = 96
-    2 = 128
-    3 = 48
-    4 = 32
-
-## Configuration values
-
-The Nano2 configuration menu uses three value IDs:
-
-    1 = Rotation
-    2 = Scroll Speed
-    3 = DPI
-
-These values are handled by the Nano2 firmware.
+VIA can read and write these values directly.
 
 ## Saving
 
-The Nano2 saves:
+Rotation and Scroll Speed are saved in the Nano2 user configuration.
 
-    DPI
-    Rotation
-    Scroll Speed
+DPI is saved by the normal Ploopy DPI system.
 
-These settings are restored when the Nano2 starts.
+All three settings are restored when the Nano2 starts.
 
 ## Keycodes
 
-The firmware provides keycodes for changing settings.
+- `DPI_CONFIG` — cycle through DPI settings
+- `ROT_0` to `ROT_315` — set rotation
+- `SCROLL_SPEED` — cycle through scroll speeds
 
-Rotation:
+## Default Button
 
-    ROT_0   = 0
-    ROT_45  = 1
-    ROT_90  = 2
-    ROT_135 = 3
-    ROT_180 = 4
-    ROT_225 = 5
-    ROT_270 = 6
-    ROT_315 = 7
+The Nano2 has one physical button.
 
-Scroll Speed:
+The default keymap assigns that button to `DPI_CONFIG`.
 
-    SCROLL_SPEED
+One press changes the DPI to the next setting.
 
-    0 = NORMAL
-    1 = SLOW
-    2 = SLOWER
-    3 = FAST
-    4 = FASTER
+## Implementation
 
-DPI:
+The Nano2-specific configuration is implemented in:
 
-    DPI_CONFIG
+`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/keymap.c`
 
-    0 = 600 DPI
-    1 = 900 DPI
-    2 = 1200 DPI
-    3 = 1600 DPI
-    4 = 2400 DPI
+The Nano2 DPI choices and default are set in:
 
-A keycode can be placed on a key or button by a keymap.
+`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/config.h`
 
-## Default keymap
+The generic Ploopy DPI system is implemented in:
 
-The default Nano2 keymap currently contains:
-
-    DPI_CONFIG
-
-The other configuration keycodes are provided by the firmware but are not placed on a key in the default keymap.
-
-## Simple view
-
-    CONFIGURATION MENU
-           │
-           ├── DPI ─────────────► DPI setting
-           │
-           ├── Rotation ────────► Pointer direction
-           │
-           └── Scroll Speed ────► Scroll speed
-
-The configuration menu changes the Nano2 settings directly.
-
-## Source
-
-The configuration implementation is in:
-
-    keyboards/ploopyco/nano_2/rev2_003/keymaps/default/keymap.c
-
-The DPI implementation is also in:
-
-    keyboards/ploopyco/ploopyco.c
+`keyboards/ploopyco/ploopyco.c`

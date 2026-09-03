@@ -1,98 +1,64 @@
 # DPI
 
-DPI controls how fast the Ploopy pointer moves.
+Nano2 Enhanced has five DPI settings:
 
-The Nano2 firmware has five DPI settings:
+| Value | DPI |
+|---:|---:|
+| 0 | 600 |
+| 1 | 900 |
+| 2 | 1200 |
+| 3 | 1600 |
+| 4 | 2400 |
 
-    600
-    900
-    1200
-    1600
-    2400
+The default is **900 DPI**.
 
-## Changing DPI
+## Button
 
-The DPI can be changed with:
+The default Nano2 button is `DPI_CONFIG`.
 
-- the Nano2 button
-- the configuration menu
+Press the button to move to the next DPI setting:
 
-### Nano2 button
+**600 → 900 → 1200 → 1600 → 2400 → 600**
 
-The button can cycle through the DPI settings.
+## VIA
 
-Each press moves to the next setting.
+VIA can select any DPI setting directly.
 
-The cycle is:
+The Nano2 uses VIA:
 
-    600
-     ↓
-    900
-     ↓
-    1200
-     ↓
-    1600
-     ↓
-    2400
-     ↓
-    600
+- Channel `0`
+- DPI Value ID `3`
 
-### Configuration menu
+## Saving
 
-The configuration menu can be used to select a DPI preset directly.
+The selected DPI is saved in the keyboard configuration.
 
-This is useful when you want to choose a specific DPI instead of cycling through the settings.
+It is restored when the Nano2 starts.
 
-## Saving the setting
+## Implementation
 
-When DPI is changed, the selected setting is saved in the keyboard configuration.
+The generic Ploopy firmware provides the DPI system.
 
-The selected DPI is therefore kept for the next use.
+It stores the current DPI in:
 
-## Applying the setting
+`keyboard_config.dpi_config`
 
-The firmware applies the selected value to the pointing device.
+It applies the selected DPI with:
 
-The selected DPI is converted to the corresponding CPI value used by the pointing-device hardware.
+`pointing_device_set_cpi()`
 
-## Default
+Nano2 Enhanced sets its own DPI choices and default in:
 
-The default DPI setting is:
+`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/config.h`
 
-    900 DPI
+It uses:
 
-## Firmware
+`PLOOPY_DPI_OPTIONS`
 
-The DPI settings are defined in:
+and
 
-    keyboards/ploopyco/ploopyco.c
+`PLOOPY_DPI_DEFAULT`
 
-The firmware stores the current setting in:
+The generic implementation remains in:
 
-    keyboard_config.dpi_config
-
-The DPI values are stored in:
-
-    dpi_array
-
-The firmware changes the setting with:
-
-    cycle_dpi()
-
-The selected value is then applied with:
-
-    pointing_device_set_cpi()
-
-## Simple view
-
-    DPI SETTING
-         │
-         ├── Nano2 button ──► cycle
-         │
-         └── Configuration menu ──► select
-                                      │
-                                      ▼
-                                  Ploopy CPI
-                                      │
-                                      ▼
-                                   Pointer
+`keyboards/ploopyco/ploopyco.c`

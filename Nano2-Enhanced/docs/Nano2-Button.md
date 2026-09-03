@@ -1,85 +1,33 @@
 # Nano2 Button
 
-The Nano2 button can activate DragScroll directly.
+The Nano2 has one physical button.
 
-This is a separate path from the keyboard methods.
+## Default Action
 
-The idea is simple:
+The default Nano2 keymap assigns the button to:
 
-    NANO-2 BUTTON
-          │
-          ▼
-    Nano2 firmware
-          │
-          ▼
-      DragScroll
+`DPI_CONFIG`
 
-## What happens
+Pressing the button changes the DPI to the next setting.
 
-The Nano2 button can be configured to control DragScroll.
+The order is:
 
-When the button is pressed:
+**600 → 900 → 1200 → 1600 → 2400 → 600**
 
-    DragScroll ON
+## VIA
 
-When the button is pressed again:
+The button can be assigned another available keycode through the keymap.
 
-    DragScroll OFF
+The default firmware does **not** use the button for Drag Scroll.
 
-The button can therefore be used as a toggle.
+Drag Scroll is a separate function.
 
-## Independent path
+## Implementation
 
-The Nano2 button does not use:
+The default button assignment is defined in:
 
-- `dragscroll-hid`
-- `dragscroll-led`
-- ScrollLock
-- the keyboard
+`keyboards/ploopyco/nano_2/rev2_003/keymaps/default/keymap.c`
 
-The Nano2 firmware controls the DragScroll state directly.
+The default keymap is:
 
-## Three ways to activate DragScroll
-
-The complete picture is:
-
-    KEYBOARD
-        │
-        ├── HID key code ──────► dragscroll-hid ───► PLOOPY
-        │
-        └── ScrollLock LED ────────────────────────► PLOOPY
-
-
-    NANO-2 BUTTON
-        │
-        ▼
-    Nano2 firmware
-        │
-        ▼
-    DragScroll
-
-All three methods have the same goal:
-
-    DragScroll
-
-Only the way DragScroll is activated is different.
-
-## Configuration
-
-The Nano2 button can be assigned to the DragScroll function.
-
-The button behavior is handled by the Nano2 firmware.
-
-The exact key or button configuration belongs to the Nano2 firmware configuration and is documented separately.
-
-## Important
-
-The Nano2 button is a direct hardware path.
-
-It does not need a host-side bridge.
-
-It does not depend on the keyboard's ScrollLock LED.
-
-It does not depend on `dragscroll-hid`.
-
-This makes it independent from the two keyboard-based activation methods.
+`LAYOUT(DPI_CONFIG)`
