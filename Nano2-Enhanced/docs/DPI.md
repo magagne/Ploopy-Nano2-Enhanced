@@ -1,14 +1,15 @@
 # DPI
 
-Nano2 Enhanced has five DPI settings:
+Nano2 Enhanced has six DPI settings:
 
 | Value | DPI |
 |---:|---:|
 | 0 | 600 |
 | 1 | 900 |
 | 2 | 1200 |
-| 3 | 1600 |
-| 4 | 2400 |
+| 3 | 1400 |
+| 4 | 1600 |
+| 5 | 2400 |
 
 The default is **900 DPI**.
 

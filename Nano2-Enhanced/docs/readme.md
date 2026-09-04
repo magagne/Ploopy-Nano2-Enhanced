@@ -11,15 +11,16 @@ Compared with the standard Nano2 firmware:
 
 ### 1.1 DPI
 
-The Nano2 can use five DPI settings:
+The Nano2 can use six DPI settings:
 
 | Value | DPI |
 |---:|---:|
 | 0 | 600 |
 | 1 | 900 |
 | 2 | 1200 |
-| 3 | 1600 |
-| 4 | 2400 |
+| 3 | 1400 |
+| 4 | 1600 |
+| 5 | 2400 |
 
 The default is **900 DPI**.
 
@@ -83,7 +84,7 @@ See [DragScroll-LED.md](DragScroll-LED.md).
 
 The default Nano2 button changes the DPI setting.
 
-Pressing it cycles through the five DPI settings.
+Pressing it cycles through the six DPI settings.
 
 See [Nano2-Button.md](Nano2-Button.md).
 
