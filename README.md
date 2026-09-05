@@ -1,4 +1,4 @@
-# Ploopy-VIA
+# Ploopy Nano-2 Enhanced
 
 Custom VIA/QMK configuration and firmware for Ploopy devices.
 
