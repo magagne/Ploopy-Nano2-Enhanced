@@ -37,16 +37,24 @@ Normal pointer movement is active.
 
 ## Vertical Scrolling Only
 
-**Vertical Scrolling Only** is a separate VIA setting.
+**Vertical Scrolling Only** is a separate VIA setting that filters the movement processed by DragScroll.
 
-When it is enabled while DragScroll is active:
+When it is **OFF** and DragScroll is active:
+
+- ball X movement becomes horizontal scrolling
+- ball Y movement becomes vertical scrolling
+
+When it is **ON** and DragScroll is active:
 
 - ball Y movement becomes vertical scrolling
 - ball X movement is ignored
 
-The setting is independent of the ScrollLock state.
+The setting does **not** activate or deactivate DragScroll. ScrollLock continues to control the overall DragScroll state.
 
-ScrollLock remains the exclusive indicator and control for the full X+Y DragScroll mode.
+The ScrollLock LED remains the exclusive indicator/control of the overall DragScroll state; it does not indicate whether Vertical Scrolling Only is enabled.
+
+See [Vertical-Scrolling-Only.md](Vertical-Scrolling-Only.md).
+
 
 ## Ploopy firmware
 

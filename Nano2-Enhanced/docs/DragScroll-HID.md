@@ -34,7 +34,12 @@ The Ploopy firmware changes its DragScroll state.
 
 **Vertical Scrolling Only** is controlled independently through the Nano2 VIA configuration.
 
-When it is enabled while DragScroll is active:
+When it is **OFF** and DragScroll is active:
+
+- ball X movement becomes horizontal scrolling
+- ball Y movement becomes vertical scrolling
+
+When it is **ON** and DragScroll is active:
 
 - ball Y movement becomes vertical scrolling
 - ball X movement is ignored
@@ -42,6 +47,8 @@ When it is enabled while DragScroll is active:
 The existing `S` and `s` HID commands continue to control the overall DragScroll state.
 
 No additional `V` or `v` HID command is required.
+
+See [Vertical-Scrolling-Only.md](Vertical-Scrolling-Only.md).
 
 ## Raw HID
 

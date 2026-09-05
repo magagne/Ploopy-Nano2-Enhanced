@@ -1,10 +1,11 @@
 # Nano2 Enhanced Configuration
 
-Nano2 Enhanced has three settings:
+Nano2 Enhanced has four settings:
 
 - **DPI** — controls pointer speed.
 - **Rotation** — rotates the pointer direction.
 - **Scroll Speed** — controls scroll speed.
+- **Vertical Scrolling Only** — limits DragScroll to vertical scrolling.
 
 ## Settings
 
@@ -76,7 +77,20 @@ The VIA custom value IDs are:
 - `3` — DPI
 - `4` — Vertical Scrolling Only
 
-**Vertical Scrolling Only** is **OFF by default**. When enabled, DragScroll uses only the Y-axis for vertical scrolling and ignores horizontal ball movement. The setting is independent of the ScrollLock-controlled DragScroll state.
+**Vertical Scrolling Only** is **OFF by default**.
+
+When it is **OFF**, DragScroll converts both X and Y ball movement into horizontal and vertical scrolling.
+
+When it is **ON**, DragScroll converts only Y ball movement into vertical scrolling. X movement is ignored. The fractional Y-axis accumulator remains active for smooth scrolling.
+
+Vertical Scrolling Only does **not** activate or deactivate DragScroll. The existing DragScroll activation mechanism remains unchanged:
+
+- `dragscroll-hid` — `S` / `s` controls DragScroll.
+- `dragscroll-led` — the ScrollLock LED state controls DragScroll on Windows.
+
+The Vertical Scrolling Only setting is independent of the ScrollLock LED. The LED remains the exclusive indicator/control of the overall DragScroll state.
+
+Rotation is applied before DragScroll processing, so Vertical Scrolling Only operates on the already-rotated pointer coordinates.
 
 User settings are persisted in EEPROM and restored when the keyboard starts.
 
@@ -94,7 +108,7 @@ VIA can read and write these values directly.
 
 ## Saving
 
-Rotation and Scroll Speed are saved in the Nano2 user configuration.
+Rotation, Scroll Speed, and Vertical Scrolling Only are saved in the Nano2 user configuration.
 
 DPI is saved by the normal Ploopy DPI system.
 

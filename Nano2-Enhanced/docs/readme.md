@@ -7,6 +7,8 @@ Compared with the standard Nano2 firmware:
 - **Pointer rotation**
 - **Adjustable scroll speed**
 
+- **Vertical Scrolling Only mode**
+
 ## 1. Features
 
 ### 1.1 DPI
@@ -125,6 +127,34 @@ There are five settings:
 
 See [Scroll-Speed.md](Scroll-Speed.md).
 
+### 1.5 Vertical Scrolling Only
+
+**Vertical Scrolling Only** provides a Y-axis-only DragScroll mode.
+
+When it is **OFF**:
+
+- DragScroll converts ball **X movement** into horizontal scrolling.
+- DragScroll converts ball **Y movement** into vertical scrolling.
+
+When it is **ON**:
+
+- DragScroll converts ball **Y movement** into vertical scrolling.
+- Ball **X movement is ignored**.
+- The existing fractional Y-axis accumulator is retained for smooth scrolling.
+
+Vertical Scrolling Only does **not** activate DragScroll. DragScroll is still activated by the existing mechanism:
+
+- `dragscroll-hid` — the `S` / `s` HID key controls DragScroll.
+- `dragscroll-led` — the ScrollLock LED state controls DragScroll on Windows.
+
+The Vertical Scrolling Only setting is independent of the ScrollLock LED and does not change what the LED represents. The LED remains the exclusive indicator/control of the overall DragScroll state.
+
+Rotation is applied before DragScroll processing, so Vertical Scrolling Only operates on the already-rotated pointer coordinates.
+
+The setting is available from the Nano2 VIA configuration menu and is **OFF by default**.
+
+See [Vertical-Scrolling-Only.md](Vertical-Scrolling-Only.md).
+
 ## 2. Configuration
 
 The configuration menu can change:
@@ -134,8 +164,11 @@ The configuration menu can change:
 | DPI |
 | Rotation |
 | Scroll Speed |
+| Vertical Scrolling Only |
 
-The firmware also provides keycodes for these settings.
+The firmware also provides keycodes for the existing DPI, Rotation, and Scroll Speed settings.
+
+Vertical Scrolling Only is a VIA configuration setting and does not have a physical keycode in the default keymap.
 
 The default Nano2 keymap currently places:
 
