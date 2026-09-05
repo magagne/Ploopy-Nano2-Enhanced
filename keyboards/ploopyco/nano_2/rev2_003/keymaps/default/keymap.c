@@ -3,6 +3,7 @@
 #include <raw_hid.h>
 
 extern bool is_drag_scroll;
+extern bool is_vertical_scrolling_only;
 
 /*
  * Nano-2 has a single physical button.
@@ -17,6 +18,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define ROTATION_VALUE_ID 1
 #define SCROLL_SPEED_VALUE_ID 2
 #define DPI_VALUE_ID 3
+#define VERTICAL_SCROLLING_ONLY_VALUE_ID 4
+#define USER_CONFIG_MAGIC 0xA5
 
 enum rotation_angle {
     ROT_0 = SAFE_RANGE,
@@ -54,6 +57,8 @@ typedef union {
     struct {
         uint8_t rotation_index;
         uint8_t scroll_speed_index;
+        uint8_t vertical_scrolling_only;
+        uint8_t magic;
     };
 } nano2_user_config_t;
 
@@ -69,6 +74,8 @@ static void save_user_config(void) {
     config.raw = 0;
     config.rotation_index = rotation_index;
     config.scroll_speed_index = scroll_speed_index;
+    config.vertical_scrolling_only = is_vertical_scrolling_only ? 1 : 0;
+    config.magic = USER_CONFIG_MAGIC;
 
     eeconfig_update_user(config.raw);
 }
@@ -77,12 +84,21 @@ void keyboard_post_init_user(void) {
     nano2_user_config_t config;
     config.raw = eeconfig_read_user();
 
-    rotation_index = (config.rotation_index < ROTATION_COUNT) ? config.rotation_index : 0;
+    if (config.magic != USER_CONFIG_MAGIC) {
+        rotation_index = 0;
+        scroll_speed_index = SCROLL_SPEED_NORMAL;
+        is_vertical_scrolling_only = false;
+        save_user_config();
+    } else {
+        rotation_index = (config.rotation_index < ROTATION_COUNT) ? config.rotation_index : 0;
 
-    scroll_speed_index =
-        (config.scroll_speed_index < ARRAY_SIZE(scroll_speed_divisors))
-            ? config.scroll_speed_index
-            : SCROLL_SPEED_NORMAL;
+        scroll_speed_index =
+            (config.scroll_speed_index < ARRAY_SIZE(scroll_speed_divisors))
+                ? config.scroll_speed_index
+                : SCROLL_SPEED_NORMAL;
+
+        is_vertical_scrolling_only = config.vertical_scrolling_only ? true : false;
+    }
 
     apply_scroll_speed();
 }
@@ -188,6 +204,10 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                     eeconfig_update_kb(keyboard_config.raw);
                     pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
                 }
+            } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
+                if (value_id_and_data[1] <= 1) {
+                    is_vertical_scrolling_only = value_id_and_data[1] != 0;
+                }
             }
             break;
 
@@ -198,6 +218,8 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 value_id_and_data[1] = scroll_speed_index;
             } else if (value_id_and_data[0] == DPI_VALUE_ID) {
                 value_id_and_data[1] = keyboard_config.dpi_config;
+            } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
+                value_id_and_data[1] = is_vertical_scrolling_only ? 1 : 0;
             }
             break;
 

@@ -62,12 +62,33 @@ DPI is different because Nano2 uses the existing Ploopy DPI system and only over
 
 ## VIA Configuration
 
-The three settings use one VIA channel:
+The Nano-2-Enhanced VIA configuration provides four Ploopy settings:
+
+- **Rotation**
+- **Scroll Speed**
+- **DPI**
+- **Vertical Scrolling Only**
+
+The VIA custom value IDs are:
+
+- `1` — Rotation
+- `2` — Scroll Speed
+- `3` — DPI
+- `4` — Vertical Scrolling Only
+
+**Vertical Scrolling Only** is **OFF by default**. When enabled, DragScroll uses only the Y-axis for vertical scrolling and ignores horizontal ball movement. The setting is independent of the ScrollLock-controlled DragScroll state.
+
+User settings are persisted in EEPROM and restored when the keyboard starts.
+
+
+The four settings use one VIA channel:
 
 - Channel `0` — Nano2 settings
 - Value ID `1` — Rotation
 - Value ID `2` — Scroll Speed
 - Value ID `3` — DPI
+
+- Value ID `4` — Vertical Scrolling Only
 
 VIA can read and write these values directly.
 
@@ -77,7 +98,7 @@ Rotation and Scroll Speed are saved in the Nano2 user configuration.
 
 DPI is saved by the normal Ploopy DPI system.
 
-All three settings are restored when the Nano2 starts.
+All four settings are restored when the Nano2 starts.
 
 ## Keycodes
 

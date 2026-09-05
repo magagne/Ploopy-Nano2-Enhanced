@@ -115,6 +115,15 @@
               ]
             },
             {
+              "label": "Vertical Scrolling Only",
+              "type": "toggle",
+              "content": [
+                "id_vertical_scrolling_only",
+                0,
+                4
+              ]
+            },
+            {
               "label": "DPI",
               "type": "dropdown",
               "options": [

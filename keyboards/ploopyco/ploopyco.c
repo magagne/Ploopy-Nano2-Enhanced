@@ -63,10 +63,11 @@ uint16_t          dpi_array[] = PLOOPY_DPI_OPTIONS;
 #define DPI_OPTION_SIZE ARRAY_SIZE(dpi_array)
 
 // Trackball State
-bool  is_scroll_clicked    = false;
-bool  is_drag_scroll       = false;
-float scroll_accumulated_h = 0;
-float scroll_accumulated_v = 0;
+bool  is_scroll_clicked         = false;
+bool  is_drag_scroll            = false;
+bool  is_vertical_scrolling_only = false;
+float scroll_accumulated_h      = 0;
+float scroll_accumulated_v      = 0;
 
 float ploopy_dragscroll_divisor_h = PLOOPY_DRAGSCROLL_DIVISOR_H;
 float ploopy_dragscroll_divisor_v = PLOOPY_DRAGSCROLL_DIVISOR_V;
@@ -149,24 +150,29 @@ void cycle_dpi(void) {
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
     mouse_report = pointing_device_task_user(mouse_report);
     if (is_drag_scroll) {
-        scroll_accumulated_h += (float)mouse_report.x / ploopy_dragscroll_divisor_h;
-        scroll_accumulated_v += (float)mouse_report.y / ploopy_dragscroll_divisor_v;
+        // Y is always processed. Keep the fractional accumulator intact
+        // for smooth scrolling at all scroll-speed settings.
+        scroll_accumulated_v +=
+            (float)mouse_report.y / ploopy_dragscroll_divisor_v;
 
-        // Assign integer parts of accumulated scroll values to the mouse report
-        mouse_report.h = (int8_t)scroll_accumulated_h;
 #ifdef PLOOPY_DRAGSCROLL_INVERT
         mouse_report.v = -(int8_t)scroll_accumulated_v;
 #else
         mouse_report.v = (int8_t)scroll_accumulated_v;
 #endif
 
-        // Update accumulated scroll values by subtracting the integer parts
-        scroll_accumulated_h -= (int8_t)scroll_accumulated_h;
         scroll_accumulated_v -= (int8_t)scroll_accumulated_v;
 
-        // Clear the X and Y values of the mouse report
-        mouse_report.x = 0;
-        mouse_report.y = 0;
+        // X is processed only in normal X+Y DragScroll mode.
+        if (is_vertical_scrolling_only) {
+            mouse_report.h = 0;
+        } else {
+            scroll_accumulated_h +=
+                (float)mouse_report.x / ploopy_dragscroll_divisor_h;
+
+            mouse_report.h = (int8_t)scroll_accumulated_h;
+            scroll_accumulated_h -= (int8_t)scroll_accumulated_h;
+        }
 
         mouse_report.x = 0;
         mouse_report.y = 0;
