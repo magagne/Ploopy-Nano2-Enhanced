@@ -1,6 +1,28 @@
 #include QMK_KEYBOARD_H
 
 #include <raw_hid.h>
+#include <timer.h>
+
+#define PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH 32
+#define PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS   30
+
+static uint16_t last_mouse_activity = 0;
+static bool mouse_activity_sent = false;
+
+static void notify_mouse_activity(void) {
+    if (!mouse_activity_sent ||
+        timer_elapsed(last_mouse_activity) >= PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS) {
+        uint8_t activity[PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH] = {0};
+
+        activity[0] = 'A';
+        activity[1] = 0x01;
+
+        raw_hid_send(activity, sizeof(activity));
+
+        last_mouse_activity = timer_read();
+        mouse_activity_sent = true;
+    }
+}
 
 extern bool is_drag_scroll;
 extern bool is_vertical_scrolling_only;
@@ -173,6 +195,21 @@ static report_mouse_t apply_rotation(report_mouse_t mouse_report) {
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    /*
+     * Physical trackball activity notification.
+     *
+     * Detect movement before rotation so this is independent of:
+     * - rotation
+     * - drag-scroll
+     * - vertical-only scrolling
+     *
+     * The first movement is sent immediately. Subsequent notifications
+     * are limited to approximately one every 30 ms.
+     */
+    if (mouse_report.x != 0 || mouse_report.y != 0) {
+        notify_mouse_activity();
+    }
+
     return apply_rotation(mouse_report);
 }
 
