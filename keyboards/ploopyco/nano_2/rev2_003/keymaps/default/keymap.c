@@ -39,19 +39,14 @@ static void restore_led_auto_mouse_layer(void) {
 }
 
 static void notify_led_auto_mouse_layer(void) {
-    if (!automatic_mouse_layer_enabled) {
-        return;
-    }
-
-    if (!led_auto_mouse_layer_test_sent &&
-        !led_auto_mouse_layer_restore_pending) {
-        register_code(KC_CAPS);
-        unregister_code(KC_CAPS);
-
-        led_auto_mouse_layer_restore_timer = timer_read();
-        led_auto_mouse_layer_restore_pending = true;
-        led_auto_mouse_layer_test_sent = true;
-    }
+    /*
+     * POC 2: completely disable the artificial Caps Lock signaling.
+     *
+     * Raw HID is the only remaining auto-mouse activity path.
+     * This isolates whether Raw HID alone can activate and refresh
+     * the ZMK auto-mouse layer without generating HID-indicator events.
+     */
+    return;
 }
 
 static void notify_hid_auto_mouse_layer(void) {
