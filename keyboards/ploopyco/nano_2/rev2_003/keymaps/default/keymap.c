@@ -7,57 +7,57 @@
 #define AUTOMATIC_MOUSE_LAYER_BIT     0x02
 #define VERTICAL_SCROLLING_ONLY_BIT   0x01
 
-#define PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH       32
-#define PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS         30
-#define PLOOPY_LED_MOUSE_ACTIVITY_RESTORE_MS      50
+#define PLOOPY_AUTO_MOUSE_LAYER_REPORT_LENGTH       32
+#define PLOOPY_AUTO_MOUSE_LAYER_INTERVAL_MS         30
+#define PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS      50
 
-static uint16_t last_mouse_activity = 0;
-static bool mouse_activity_sent = false;
-static uint16_t led_mouse_activity_restore_timer = 0;
-static bool led_mouse_activity_restore_pending = false;
+static uint16_t last_auto_mouse_layer = 0;
+static bool auto_mouse_layer_sent = false;
+static uint16_t led_auto_mouse_layer_restore_timer = 0;
+static bool led_auto_mouse_layer_restore_pending = false;
 static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
 
-static void restore_led_mouse_activity(void) {
-    if (led_mouse_activity_restore_pending &&
-        timer_elapsed(led_mouse_activity_restore_timer) >=
-            PLOOPY_LED_MOUSE_ACTIVITY_RESTORE_MS) {
+static void restore_led_auto_mouse_layer(void) {
+    if (led_auto_mouse_layer_restore_pending &&
+        timer_elapsed(led_auto_mouse_layer_restore_timer) >=
+            PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS) {
         register_code(KC_CAPS);
         unregister_code(KC_CAPS);
 
-        led_mouse_activity_restore_pending = false;
+        led_auto_mouse_layer_restore_pending = false;
     }
 }
 
-static void notify_led_mouse_activity(void) {
+static void notify_led_auto_mouse_layer(void) {
     if (!automatic_mouse_layer_enabled) {
         return;
     }
 
-    if (!led_mouse_activity_restore_pending) {
+    if (!led_auto_mouse_layer_restore_pending) {
         register_code(KC_CAPS);
         unregister_code(KC_CAPS);
 
-        led_mouse_activity_restore_timer = timer_read();
-        led_mouse_activity_restore_pending = true;
+        led_auto_mouse_layer_restore_timer = timer_read();
+        led_auto_mouse_layer_restore_pending = true;
     }
 }
 
-static void notify_mouse_activity(void) {
+static void notify_hid_auto_mouse_layer(void) {
     if (!automatic_mouse_layer_enabled) {
         return;
     }
 
-    if (!mouse_activity_sent ||
-        timer_elapsed(last_mouse_activity) >= PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS) {
-        uint8_t activity[PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH] = {0};
+    if (!auto_mouse_layer_sent ||
+        timer_elapsed(last_auto_mouse_layer) >= PLOOPY_AUTO_MOUSE_LAYER_INTERVAL_MS) {
+        uint8_t activity[PLOOPY_AUTO_MOUSE_LAYER_REPORT_LENGTH] = {0};
 
         activity[0] = 'A';
         activity[1] = 0x01;
 
         raw_hid_send(activity, sizeof(activity));
 
-        last_mouse_activity = timer_read();
-        mouse_activity_sent = true;
+        last_auto_mouse_layer = timer_read();
+        auto_mouse_layer_sent = true;
     }
 }
 
@@ -281,10 +281,10 @@ static report_mouse_t apply_rotation(report_mouse_t mouse_report) {
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    restore_led_mouse_activity();
+    restore_led_auto_mouse_layer();
 
     /*
-     * Physical trackball activity notification.
+     * Physical trackball activity notification for Auto Mouse Layer.
      *
      * Detect movement before rotation so this is independent of:
      * - rotation
@@ -295,8 +295,8 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
      * are limited to approximately one every 30 ms.
      */
     if (mouse_report.x != 0 || mouse_report.y != 0) {
-        notify_mouse_activity();
-        notify_led_mouse_activity();
+        notify_hid_auto_mouse_layer();
+        notify_led_auto_mouse_layer();
     }
 
     return apply_rotation(mouse_report);
@@ -346,7 +346,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                              * Guarantee an immediate Raw HID notification
                              * after re-enabling the feature.
                              */
-                            mouse_activity_sent = false;
+                            auto_mouse_layer_sent = false;
                         }
                     }
                 }

@@ -2,9 +2,11 @@
 
 ## Overview
 
-**Vertical Scrolling Only** is a Nano2 Enhanced DragScroll mode that converts only vertical ball movement into vertical scrolling.
+**Vertical Scrolling Only** is a Nano2 Enhanced DragScroll mode that converts
+only vertical ball movement into vertical scrolling.
 
-It is a filtering option for DragScroll. It does **not** activate or deactivate DragScroll.
+It is a filtering option for DragScroll. It does **not** activate or
+deactivate DragScroll.
 
 ## Behavior
 
@@ -23,7 +25,8 @@ When Vertical Scrolling Only is **ON**:
 - Ball X movement is ignored.
 - The fractional Y-axis accumulator remains active for smooth scrolling.
 
-The existing scroll-speed settings continue to control the Y-axis scrolling rate.
+The existing scroll-speed settings continue to control the Y-axis scrolling
+rate.
 
 ## Processing Order
 
@@ -43,27 +46,20 @@ Pointer movement is processed in this order:
          v
     Vertical wheel scrolling
 
-This means that Vertical Scrolling Only operates on the already-rotated pointer coordinates.
+This means that Vertical Scrolling Only operates on the already-rotated
+pointer coordinates.
 
 ## DragScroll Activation
 
-Vertical Scrolling Only is independent of the mechanism used to activate DragScroll.
+Vertical Scrolling Only is independent of the mechanism used to activate
+DragScroll.
 
-### dragscroll-led
+The existing DragScroll activation mechanisms remain unchanged:
 
-With `dragscroll-led`:
+- The HID path uses the existing `S` / `s` control.
+- The Windows LED path uses the ScrollLock LED state.
 
-- ScrollLock controls the overall DragScroll state.
-- Vertical Scrolling Only is controlled independently through VIA.
-- The ScrollLock LED remains the exclusive indicator/control of the overall DragScroll state.
-
-### dragscroll-hid
-
-With `dragscroll-hid`:
-
-- `S` / `s` controls the overall DragScroll state.
-- Vertical Scrolling Only is controlled independently through VIA.
-- No additional `V` / `v` HID command is required.
+Vertical Scrolling Only does not change the meaning of either mechanism.
 
 ## VIA Configuration
 
@@ -71,7 +67,7 @@ Vertical Scrolling Only is a VIA toggle:
 
 - Channel: `0`
 - Value ID: `4`
-- Default: `OFF`
+- Default: **OFF**
 
 The setting is available from the Nano2 Enhanced VIA configuration.
 
@@ -81,11 +77,13 @@ Vertical Scrolling Only is stored in the Nano2 user configuration EEPROM.
 
 The setting is restored when the keyboard starts.
 
-If the stored configuration is invalid or uninitialized, Vertical Scrolling Only defaults to **OFF**.
+If the stored configuration is invalid or uninitialized, Vertical Scrolling Only
+defaults to **OFF**.
 
 ## Keycodes
 
-Vertical Scrolling Only does not have a physical keycode in the default Nano2 keymap.
+Vertical Scrolling Only does not have a physical keycode in the default
+Nano2 keymap.
 
 It is controlled through the VIA configuration.
 

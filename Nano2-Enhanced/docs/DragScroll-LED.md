@@ -1,35 +1,28 @@
 # DragScroll-LED
 
-`dragscroll-led` uses the keyboard's ScrollLock LED state to control DragScroll on a Ploopy.
+`DragScroll-LED` uses the keyboard's Scroll Lock LED state to control DragScroll on a Ploopy.
 
-The idea is simple:
+The transport direction is:
 
-    KEYBOARD
-        │
-        │ ScrollLock LED state
-        ▼
-    PLOOPY
-        │
-        ▼
-    DragScroll
+    Keyboard → Ploopy
 
 ## What happens
 
-The keyboard changes its ScrollLock state.
+The keyboard changes its Scroll Lock state.
 
-The Ploopy receives the LED state.
+Windows sends the resulting LED state to the Ploopy.
 
-The Ploopy firmware uses the ScrollLock state to set:
+The Ploopy firmware uses the Scroll Lock state to set:
 
     is_drag_scroll
 
-When ScrollLock is ON:
+When Scroll Lock is ON:
 
     is_drag_scroll = true
 
 DragScroll is active.
 
-When ScrollLock is OFF:
+When Scroll Lock is OFF:
 
     is_drag_scroll = false
 
@@ -49,12 +42,11 @@ When it is **ON** and DragScroll is active:
 - ball Y movement becomes vertical scrolling
 - ball X movement is ignored
 
-The setting does **not** activate or deactivate DragScroll. ScrollLock continues to control the overall DragScroll state.
+The setting does **not** activate or deactivate DragScroll.
 
-The ScrollLock LED remains the exclusive indicator/control of the overall DragScroll state; it does not indicate whether Vertical Scrolling Only is enabled.
+Scroll Lock continues to control the overall DragScroll state.
 
 See [Vertical-Scrolling-Only.md](Vertical-Scrolling-Only.md).
-
 
 ## Ploopy firmware
 
@@ -69,7 +61,7 @@ The important part is:
 
     is_drag_scroll = led_state.scroll_lock;
 
-The ScrollLock LED state directly controls DragScroll.
+The Scroll Lock LED state directly controls DragScroll.
 
 ## Ball movement
 
@@ -85,7 +77,7 @@ This makes slow scrolling smoother.
 
 ## Platform
 
-This method depends on the keyboard exposing its ScrollLock LED state in a way the Ploopy can receive.
+This method depends on the keyboard exposing its Scroll Lock LED state in a way the Ploopy can receive.
 
 The current implementation is supported on:
 
@@ -93,9 +85,9 @@ The current implementation is supported on:
 
 It is not supported on Mac.
 
-## Important
+## Implementation
 
-`dragscroll-led` does not use `dragscroll-hid`.
+`DragScroll-LED` does not use `DragScroll-HID`.
 
 There is no host-side bridge between the keyboard and the Ploopy.
 
@@ -113,8 +105,6 @@ The path is:
         │
         ▼
     DragScroll
-
-## Source
 
 The Ploopy implementation is in:
 

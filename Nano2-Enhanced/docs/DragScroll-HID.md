@@ -1,21 +1,10 @@
 # DragScroll-HID
 
-`dragscroll-hid` lets a keyboard tell a Ploopy to use DragScroll.
+`DragScroll-HID` lets a keyboard tell a Ploopy to use DragScroll.
 
-The idea is simple:
+The transport direction is:
 
-    KEYBOARD
-        │
-        │ HID key code
-        ▼
-    dragscroll-hid
-        │
-        │ HID command
-        ▼
-    PLOOPY
-        │
-        ▼
-    DragScroll
+    Keyboard → Ploopy
 
 ## What happens
 
@@ -26,7 +15,7 @@ There are two commands:
 - `S` = DragScroll ON
 - `s` = DragScroll OFF
 
-`dragscroll-hid` receives the message and sends the command to the connected Ploopy.
+`Ploopy-Bridge-HID` receives the message and forwards the command to the connected Ploopy.
 
 The Ploopy firmware changes its DragScroll state.
 
@@ -46,20 +35,20 @@ When it is **ON** and DragScroll is active:
 
 The existing `S` and `s` HID commands continue to control the overall DragScroll state.
 
-No additional `V` or `v` HID command is required.
+No additional HID command is required for Vertical Scrolling Only.
 
 See [Vertical-Scrolling-Only.md](Vertical-Scrolling-Only.md).
 
 ## Raw HID
 
-`dragscroll-hid` looks for this Raw HID interface:
+`DragScroll-HID` uses this Raw HID interface:
 
 - Usage Page: `0xFF60`
 - Usage: `0x0061`
 
 The bridge does not depend on a specific keyboard VID or PID.
 
-This makes it possible for compatible keyboards to use the same bridge.
+Compatible keyboard endpoints can therefore use the same bridge.
 
 ## Ploopy
 
@@ -75,7 +64,7 @@ The Ploopy firmware also keeps small movement values between reports so scrollin
 
 ## Connection
 
-`dragscroll-hid` continuously looks for compatible HID devices.
+`Ploopy-Bridge-HID` continuously looks for compatible HID devices.
 
 It handles:
 
@@ -86,9 +75,11 @@ It handles:
 
 The bridge can therefore keep running while a device is temporarily disconnected.
 
-## macOS
+## Platform
 
-macOS needs shared access to the Raw HID device.
+The current `DragScroll-HID` transport is used on **macOS** through `Ploopy-Bridge-HID`.
+
+macOS requires shared access to the Raw HID device.
 
 The bridge explicitly enables this when running on macOS.
 
@@ -96,39 +87,17 @@ The repository also contains a macOS LaunchAgent for starting the bridge automat
 
 Service name:
 
-    com.dragscroll-hid
+    com.ploopy-bridge-hid
 
-## Windows
+## Implementation
 
-The HID bridge also works on Windows.
+The main bridge implementation is:
 
-The core bridge is not tied to macOS.
-
-Startup configuration is handled separately from the HID code.
-
-## Debug
-
-Use:
-
-    python3 src/drag_scroll_hid.py --debug
-
-Debug mode shows information about:
-
-- detected devices
-- connections
-- disconnections
-- HID messages received
-- HID commands sent
-
-## Main file
-
-The main implementation is:
-
-    src/drag_scroll_hid.py
+    src/ploopy_bridge_hid.py
 
 The bridge is kept separate from:
 
 - keyboard firmware
 - Ploopy firmware
 
-This keeps the different parts simple and independent.
+This keeps the transport independent from the keyboard and Ploopy behavior.

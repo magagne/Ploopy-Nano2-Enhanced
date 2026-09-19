@@ -1,12 +1,16 @@
 # Nano2 Enhanced Configuration
 
-Nano2 Enhanced has five settings:
+Nano2 Enhanced has five configurable settings:
 
 - **DPI** — controls pointer speed.
+
 - **Rotation** — rotates the pointer direction.
+
 - **Scroll Speed** — controls scroll speed.
+
 - **Vertical Scrolling Only** — limits DragScroll to vertical scrolling.
-- **Automatic Mouse Layer** — enables or disables automatic Mouse layer activation from Ploopy movement.
+
+- **Automatic Mouse Layer** — enables or disables AutoMouseLayer.
 
 ## Settings
 
@@ -50,60 +54,72 @@ Default: **0°**.
 
 Default: **NORMAL**.
 
-## Where values are defined
+### Vertical Scrolling Only
 
-| Setting | Values are defined in | Behavior |
-|---|---|---|
-| DPI | `config.h` | Generic Ploopy DPI system |
-| Rotation | `keymap.c` | Nano2-specific |
-| Scroll Speed | `keymap.c` | Nano2-specific |
+When **OFF**, DragScroll converts both X and Y ball movement into horizontal
+and vertical scrolling.
 
-DPI is different because Nano2 uses the existing Ploopy DPI system and only overrides its choices.
+When **ON**, DragScroll converts only Y ball movement into vertical scrolling.
+X movement is ignored. The fractional Y-axis accumulator remains active for
+smooth scrolling.
 
-`config.h` is the place to add or change DPI choices for Nano2 Enhanced.
+Vertical Scrolling Only does not activate or deactivate DragScroll. It is
+independent of the mechanism used to activate DragScroll.
+
+Rotation is applied before DragScroll processing, so Vertical Scrolling Only
+operates on the already-rotated pointer coordinates.
+
+The setting is **OFF by default**.
+
+The DragScroll activation mechanisms are:
+
+- **macOS — DragScroll-HID:** `S` / `s` Raw HID commands forwarded by
+  `Ploopy-Bridge-HID`.
+- **Windows — DragScroll-LED:** Scroll Lock LED state controls DragScroll.
+
+See [DragScroll-HID.md](DragScroll-HID.md).
+
+See [DragScroll-LED.md](DragScroll-LED.md).
+
+### AutoMouseLayer
+
+AutoMouseLayer allows physical Ploopy movement to activate the configured
+Mouse layer on the keyboard.
+
+When **Automatic Mouse Layer** is **ON**, the Ploopy generates the AutoMouseLayer
+signal when physical movement occurs.
+
+The transport depends on the operating system:
+
+- **macOS — AutoMouseLayer-HID:** Raw HID `A 01` notification forwarded by
+  `Ploopy-Bridge-HID`.
+- **Windows — AutoMouseLayer-LED:** Caps Lock keyboard event followed by the
+  Caps Lock LED state sent by Windows to the keyboard.
+
+When **Automatic Mouse Layer** is **OFF**, the Ploopy does not generate the
+AutoMouseLayer signal through either transport.
+
+The keyboard owns the AutoMouseLayer timeout and layer activation logic.
+
+The current keyboard timeout is **700 ms**.
+
+See [AutoMouseLayer-HID.md](AutoMouseLayer-HID.md).
+
+See [AutoMouseLayer-LED.md](AutoMouseLayer-LED.md).
 
 ## VIA Configuration
 
-The Nano-2-Enhanced VIA configuration provides five Ploopy settings:
+The Nano2 Enhanced VIA configuration provides five Ploopy settings:
+
+- **DPI**
 
 - **Rotation**
+
 - **Scroll Speed**
-- **DPI**
+
 - **Vertical Scrolling Only**
+
 - **Automatic Mouse Layer**
-
-The VIA custom value IDs are:
-
-- `1` — Rotation
-- `2` — Scroll Speed
-- `3` — DPI
-- `4` — Vertical Scrolling Only
-- `5` — Automatic Mouse Layer
-
-**Vertical Scrolling Only** is **OFF by default**.
-
-**Automatic Mouse Layer** is **ON by default**.
-
-When **Automatic Mouse Layer** is **ON**, physical Ploopy movement can automatically activate the keyboard Mouse layer.
-
-When it is **OFF**, Ploopy movement does not generate the mouse-layer activation notifications. Both the macOS Raw HID path and the Windows Caps Lock LED path are disabled by this setting.
-
-For **Vertical Scrolling Only**:
-
-When **Vertical Scrolling Only** is **OFF**, DragScroll converts both X and Y ball movement into horizontal and vertical scrolling.
-When **Vertical Scrolling Only** is **ON**, DragScroll converts only Y ball movement into vertical scrolling. X movement is ignored. The fractional Y-axis accumulator remains active for smooth scrolling.
-
-Vertical Scrolling Only does **not** activate or deactivate DragScroll. The existing DragScroll activation mechanism remains unchanged:
-
-- `dragscroll-hid` — `S` / `s` controls DragScroll.
-- `dragscroll-led` — the ScrollLock LED state controls DragScroll on Windows.
-
-The Vertical Scrolling Only setting is independent of the ScrollLock LED. The LED remains the exclusive indicator/control of the overall DragScroll state.
-
-Rotation is applied before DragScroll processing, so Vertical Scrolling Only operates on the already-rotated pointer coordinates.
-
-User settings are persisted in EEPROM and restored when the keyboard starts.
-
 
 The five settings use one VIA channel:
 
@@ -116,9 +132,31 @@ The five settings use one VIA channel:
 
 VIA can read and write these values directly.
 
+**Vertical Scrolling Only** is **OFF by default**.
+
+**Automatic Mouse Layer** is **ON by default**.
+
+User settings are persisted in EEPROM and restored when the Nano2 starts.
+
+## Where values are defined
+
+| Setting | Values are defined in | Behavior |
+|---|---|---|
+| DPI | `config.h` | Generic Ploopy DPI system |
+| Rotation | `keymap.c` | Nano2-specific |
+| Scroll Speed | `keymap.c` | Nano2-specific |
+| Vertical Scrolling Only | `keymap.c` | Nano2-specific |
+| Automatic Mouse Layer | `keymap.c` | Nano2-specific |
+
+DPI is different because Nano2 uses the existing Ploopy DPI system and only
+overrides its choices.
+
+`config.h` is the place to add or change DPI choices for Nano2 Enhanced.
+
 ## Saving
 
-Rotation, Scroll Speed, Vertical Scrolling Only, and Automatic Mouse Layer are saved in the Nano2 user configuration.
+Rotation, Scroll Speed, Vertical Scrolling Only, and Automatic Mouse Layer are
+saved in the Nano2 user configuration.
 
 DPI is saved by the normal Ploopy DPI system.
 
