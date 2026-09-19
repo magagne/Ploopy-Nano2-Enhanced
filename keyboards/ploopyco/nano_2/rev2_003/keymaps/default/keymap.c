@@ -15,6 +15,16 @@ static uint16_t last_auto_mouse_layer = 0;
 static bool auto_mouse_layer_sent = false;
 static uint16_t led_auto_mouse_layer_restore_timer = 0;
 static bool led_auto_mouse_layer_restore_pending = false;
+
+/*
+ * POC: allow the Caps Lock LED signaling sequence only once after boot.
+ *
+ * Raw HID remains the normal activity path. This deliberately prevents
+ * repeated 50 ms Caps Lock pulse/restore cycles so we can determine whether
+ * those repeated HID-indicator transitions are causing the flashing.
+ */
+static bool led_auto_mouse_layer_test_sent = false;
+
 static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
 
 static void restore_led_auto_mouse_layer(void) {
@@ -33,12 +43,14 @@ static void notify_led_auto_mouse_layer(void) {
         return;
     }
 
-    if (!led_auto_mouse_layer_restore_pending) {
+    if (!led_auto_mouse_layer_test_sent &&
+        !led_auto_mouse_layer_restore_pending) {
         register_code(KC_CAPS);
         unregister_code(KC_CAPS);
 
         led_auto_mouse_layer_restore_timer = timer_read();
         led_auto_mouse_layer_restore_pending = true;
+        led_auto_mouse_layer_test_sent = true;
     }
 }
 
