@@ -161,7 +161,14 @@ The current Corne configuration uses:
 | macOS | 0 | 3 |
 | Windows | 4 | 7 |
 
-The current keyboard AutoMouseLayer timeout is **700 ms**.
+For Windows, AutoMouseLayer is state-based and does not use the normal
+keyboard AutoMouseLayer timeout.
+
+The Nano keeps Caps Lock ON while physical ball movement continues and turns
+it OFF after **400 ms without movement**.
+
+The 450 ms ZMK AutoMouseLayer timeout applies to the separate macOS Raw HID
+transport.
 
 AutoMouseLayer is enabled by default through the Nano2 VIA configuration.
 

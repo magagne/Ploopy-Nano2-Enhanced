@@ -13,8 +13,11 @@ keyboard event.
 Windows updates the Caps Lock state and sends the resulting Caps Lock LED
 state to the keyboard.
 
-The ZMK firmware detects the Caps Lock transition and uses it as the
-AutoMouseLayer signal.
+The ZMK firmware uses the current Caps Lock LED state as the
+AutoMouseLayer signal:
+
+- Caps Lock ON → Windows Mouse layer ON
+- Caps Lock OFF → Windows Mouse layer OFF
 
 The transport therefore follows this path:
 
@@ -49,7 +52,11 @@ The current Corne configuration maps:
 |---|---:|---:|
 | Windows | 4 | 7 |
 
-The keyboard owns the AutoMouseLayer timeout and layer activation logic.
+The keyboard owns the layer activation logic.
+
+This Windows path is state-based and does not use the normal
+AutoMouseLayer timeout. The Nano keeps Caps Lock ON while physical movement
+continues and turns it OFF after **400 ms without movement**.
 
 ## No Bridge Required
 
