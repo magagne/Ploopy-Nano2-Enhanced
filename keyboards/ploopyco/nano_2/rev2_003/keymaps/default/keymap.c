@@ -9,36 +9,24 @@
 
 #define PLOOPY_AUTO_MOUSE_LAYER_REPORT_LENGTH       32
 #define PLOOPY_AUTO_MOUSE_LAYER_INTERVAL_MS         30
-#define PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS      200
+#define PLOOPY_AUTO_MOUSE_LAYER_MOTION_TIMEOUT_MS   400
 
 static uint16_t last_auto_mouse_layer = 0;
 static bool auto_mouse_layer_sent = false;
-static uint16_t led_auto_mouse_layer_restore_timer = 0;
-static bool led_auto_mouse_layer_restore_pending = false;
+static bool auto_mouse_layer_moving = false;
+static uint16_t auto_mouse_layer_last_motion = 0;
+static bool caps_state_expected = false;
 static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
 
-static void restore_led_auto_mouse_layer(void) {
-    if (led_auto_mouse_layer_restore_pending &&
-        timer_elapsed(led_auto_mouse_layer_restore_timer) >=
-            PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS) {
-        register_code(KC_CAPS);
-        unregister_code(KC_CAPS);
-
-        led_auto_mouse_layer_restore_pending = false;
-    }
-}
-
-static void notify_led_auto_mouse_layer(void) {
+static void notify_led_auto_mouse_layer(bool active) {
     if (!automatic_mouse_layer_enabled) {
         return;
     }
 
-    if (!led_auto_mouse_layer_restore_pending) {
+    if (caps_state_expected != active) {
         register_code(KC_CAPS);
         unregister_code(KC_CAPS);
-
-        led_auto_mouse_layer_restore_timer = timer_read();
-        led_auto_mouse_layer_restore_pending = true;
+        caps_state_expected = active;
     }
 }
 
@@ -281,7 +269,7 @@ static report_mouse_t apply_rotation(report_mouse_t mouse_report) {
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
-    restore_led_auto_mouse_layer();
+    bool raw_moving = (mouse_report.x != 0 || mouse_report.y != 0);
 
     /*
      * Physical trackball activity notification for Auto Mouse Layer.
@@ -291,12 +279,29 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
      * - drag-scroll
      * - vertical-only scrolling
      *
-     * The first movement is sent immediately. Subsequent notifications
-     * are limited to approximately one every 30 ms.
+     * Raw HID remains the existing Mac activity path.
+     *
+     * Caps Lock is used as a Windows state signal:
+     * - movement starts -> Caps ON
+     * - continued movement -> no additional Caps traffic
+     * - 400 ms without movement -> Caps OFF
      */
-    if (mouse_report.x != 0 || mouse_report.y != 0) {
+    if (raw_moving) {
+        auto_mouse_layer_last_motion = timer_read();
+
+        if (!auto_mouse_layer_moving) {
+            auto_mouse_layer_moving = true;
+            notify_led_auto_mouse_layer(true);
+        }
+
         notify_hid_auto_mouse_layer();
-        notify_led_auto_mouse_layer();
+    }
+
+    if (auto_mouse_layer_moving &&
+        timer_elapsed(auto_mouse_layer_last_motion) >=
+            PLOOPY_AUTO_MOUSE_LAYER_MOTION_TIMEOUT_MS) {
+        auto_mouse_layer_moving = false;
+        notify_led_auto_mouse_layer(false);
     }
 
     return apply_rotation(mouse_report);
