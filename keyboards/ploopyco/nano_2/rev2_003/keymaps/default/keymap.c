@@ -9,13 +9,12 @@
 
 #define PLOOPY_AUTO_MOUSE_LAYER_REPORT_LENGTH       32
 #define PLOOPY_AUTO_MOUSE_LAYER_INTERVAL_MS         30
-#define PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS      50
+#define PLOOPY_LED_AUTO_MOUSE_LAYER_RESTORE_MS      200
 
 static uint16_t last_auto_mouse_layer = 0;
 static bool auto_mouse_layer_sent = false;
 static uint16_t led_auto_mouse_layer_restore_timer = 0;
 static bool led_auto_mouse_layer_restore_pending = false;
-
 static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
 
 static void restore_led_auto_mouse_layer(void) {
@@ -30,14 +29,17 @@ static void restore_led_auto_mouse_layer(void) {
 }
 
 static void notify_led_auto_mouse_layer(void) {
-    /*
-     * POC 2: completely disable the artificial Caps Lock signaling.
-     *
-     * Raw HID is the only remaining auto-mouse activity path.
-     * This isolates whether Raw HID alone can activate and refresh
-     * the ZMK auto-mouse layer without generating HID-indicator events.
-     */
-    return;
+    if (!automatic_mouse_layer_enabled) {
+        return;
+    }
+
+    if (!led_auto_mouse_layer_restore_pending) {
+        register_code(KC_CAPS);
+        unregister_code(KC_CAPS);
+
+        led_auto_mouse_layer_restore_timer = timer_read();
+        led_auto_mouse_layer_restore_pending = true;
+    }
 }
 
 static void notify_hid_auto_mouse_layer(void) {
