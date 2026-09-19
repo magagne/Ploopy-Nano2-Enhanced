@@ -157,6 +157,15 @@
                 0,
                 3
               ]
+            },
+            {
+              "label": "Automatic Mouse Layer",
+              "type": "toggle",
+              "content": [
+                "id_automatic_mouse_layer",
+                0,
+                5
+              ]
             }
           ]
         }

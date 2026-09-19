@@ -1,11 +1,12 @@
 # Nano2 Enhanced Configuration
 
-Nano2 Enhanced has four settings:
+Nano2 Enhanced has five settings:
 
 - **DPI** — controls pointer speed.
 - **Rotation** — rotates the pointer direction.
 - **Scroll Speed** — controls scroll speed.
 - **Vertical Scrolling Only** — limits DragScroll to vertical scrolling.
+- **Automatic Mouse Layer** — enables or disables automatic Mouse layer activation from Ploopy movement.
 
 ## Settings
 
@@ -63,12 +64,13 @@ DPI is different because Nano2 uses the existing Ploopy DPI system and only over
 
 ## VIA Configuration
 
-The Nano-2-Enhanced VIA configuration provides four Ploopy settings:
+The Nano-2-Enhanced VIA configuration provides five Ploopy settings:
 
 - **Rotation**
 - **Scroll Speed**
 - **DPI**
 - **Vertical Scrolling Only**
+- **Automatic Mouse Layer**
 
 The VIA custom value IDs are:
 
@@ -76,12 +78,20 @@ The VIA custom value IDs are:
 - `2` — Scroll Speed
 - `3` — DPI
 - `4` — Vertical Scrolling Only
+- `5` — Automatic Mouse Layer
 
 **Vertical Scrolling Only** is **OFF by default**.
 
-When it is **OFF**, DragScroll converts both X and Y ball movement into horizontal and vertical scrolling.
+**Automatic Mouse Layer** is **ON by default**.
 
-When it is **ON**, DragScroll converts only Y ball movement into vertical scrolling. X movement is ignored. The fractional Y-axis accumulator remains active for smooth scrolling.
+When **Automatic Mouse Layer** is **ON**, physical Ploopy movement can automatically activate the keyboard Mouse layer.
+
+When it is **OFF**, Ploopy movement does not generate the mouse-layer activation notifications. Both the macOS Raw HID path and the Windows Caps Lock LED path are disabled by this setting.
+
+For **Vertical Scrolling Only**:
+
+When **Vertical Scrolling Only** is **OFF**, DragScroll converts both X and Y ball movement into horizontal and vertical scrolling.
+When **Vertical Scrolling Only** is **ON**, DragScroll converts only Y ball movement into vertical scrolling. X movement is ignored. The fractional Y-axis accumulator remains active for smooth scrolling.
 
 Vertical Scrolling Only does **not** activate or deactivate DragScroll. The existing DragScroll activation mechanism remains unchanged:
 
@@ -95,24 +105,24 @@ Rotation is applied before DragScroll processing, so Vertical Scrolling Only ope
 User settings are persisted in EEPROM and restored when the keyboard starts.
 
 
-The four settings use one VIA channel:
+The five settings use one VIA channel:
 
 - Channel `0` — Nano2 settings
 - Value ID `1` — Rotation
 - Value ID `2` — Scroll Speed
 - Value ID `3` — DPI
-
 - Value ID `4` — Vertical Scrolling Only
+- Value ID `5` — Automatic Mouse Layer
 
 VIA can read and write these values directly.
 
 ## Saving
 
-Rotation, Scroll Speed, and Vertical Scrolling Only are saved in the Nano2 user configuration.
+Rotation, Scroll Speed, Vertical Scrolling Only, and Automatic Mouse Layer are saved in the Nano2 user configuration.
 
 DPI is saved by the normal Ploopy DPI system.
 
-All four settings are restored when the Nano2 starts.
+All five settings are restored when the Nano2 starts.
 
 ## Keycodes
 

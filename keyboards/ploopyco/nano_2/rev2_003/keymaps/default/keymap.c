@@ -3,13 +3,50 @@
 #include <raw_hid.h>
 #include <timer.h>
 
-#define PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH 32
-#define PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS   30
+#define AUTOMATIC_MOUSE_LAYER_DEFAULT true
+#define AUTOMATIC_MOUSE_LAYER_BIT     0x02
+#define VERTICAL_SCROLLING_ONLY_BIT   0x01
+
+#define PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH       32
+#define PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS         30
+#define PLOOPY_LED_MOUSE_ACTIVITY_RESTORE_MS      50
 
 static uint16_t last_mouse_activity = 0;
 static bool mouse_activity_sent = false;
+static uint16_t led_mouse_activity_restore_timer = 0;
+static bool led_mouse_activity_restore_pending = false;
+static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
+
+static void restore_led_mouse_activity(void) {
+    if (led_mouse_activity_restore_pending &&
+        timer_elapsed(led_mouse_activity_restore_timer) >=
+            PLOOPY_LED_MOUSE_ACTIVITY_RESTORE_MS) {
+        register_code(KC_CAPS);
+        unregister_code(KC_CAPS);
+
+        led_mouse_activity_restore_pending = false;
+    }
+}
+
+static void notify_led_mouse_activity(void) {
+    if (!automatic_mouse_layer_enabled) {
+        return;
+    }
+
+    if (!led_mouse_activity_restore_pending) {
+        register_code(KC_CAPS);
+        unregister_code(KC_CAPS);
+
+        led_mouse_activity_restore_timer = timer_read();
+        led_mouse_activity_restore_pending = true;
+    }
+}
 
 static void notify_mouse_activity(void) {
+    if (!automatic_mouse_layer_enabled) {
+        return;
+    }
+
     if (!mouse_activity_sent ||
         timer_elapsed(last_mouse_activity) >= PLOOPY_MOUSE_ACTIVITY_INTERVAL_MS) {
         uint8_t activity[PLOOPY_MOUSE_ACTIVITY_REPORT_LENGTH] = {0};
@@ -41,7 +78,17 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 #define SCROLL_SPEED_VALUE_ID 2
 #define DPI_VALUE_ID 3
 #define VERTICAL_SCROLLING_ONLY_VALUE_ID 4
-#define USER_CONFIG_MAGIC 0xA5
+#define AUTOMATIC_MOUSE_LAYER_VALUE_ID 5
+
+/*
+ * Configuration format version.
+ *
+ * 0xA5 = previous format.
+ * 0xA6 = format with Automatic Mouse Layer.
+ */
+#define USER_CONFIG_MAGIC_OLD 0xA5
+#define USER_CONFIG_MAGIC     0xA6
+
 
 enum rotation_angle {
     ROT_0 = SAFE_RANGE,
@@ -96,7 +143,11 @@ static void save_user_config(void) {
     config.raw = 0;
     config.rotation_index = rotation_index;
     config.scroll_speed_index = scroll_speed_index;
-    config.vertical_scrolling_only = is_vertical_scrolling_only ? 1 : 0;
+
+    config.vertical_scrolling_only =
+        (is_vertical_scrolling_only ? VERTICAL_SCROLLING_ONLY_BIT : 0) |
+        (automatic_mouse_layer_enabled ? AUTOMATIC_MOUSE_LAYER_BIT : 0);
+
     config.magic = USER_CONFIG_MAGIC;
 
     eeconfig_update_user(config.raw);
@@ -106,24 +157,59 @@ void keyboard_post_init_user(void) {
     nano2_user_config_t config;
     config.raw = eeconfig_read_user();
 
-    if (config.magic != USER_CONFIG_MAGIC) {
-        rotation_index = 0;
-        scroll_speed_index = SCROLL_SPEED_NORMAL;
-        is_vertical_scrolling_only = false;
-        save_user_config();
-    } else {
-        rotation_index = (config.rotation_index < ROTATION_COUNT) ? config.rotation_index : 0;
+    if (config.magic == USER_CONFIG_MAGIC_OLD) {
+        /*
+         * Migrate the previous EEPROM format.
+         *
+         * The old format had no Automatic Mouse Layer setting, so preserve
+         * all existing settings and enable the new feature by default.
+         */
+        rotation_index =
+            (config.rotation_index < ROTATION_COUNT)
+                ? config.rotation_index
+                : 0;
 
         scroll_speed_index =
             (config.scroll_speed_index < ARRAY_SIZE(scroll_speed_divisors))
                 ? config.scroll_speed_index
                 : SCROLL_SPEED_NORMAL;
 
-        is_vertical_scrolling_only = config.vertical_scrolling_only ? true : false;
+        is_vertical_scrolling_only =
+            (config.vertical_scrolling_only & VERTICAL_SCROLLING_ONLY_BIT) != 0;
+
+        automatic_mouse_layer_enabled =
+            AUTOMATIC_MOUSE_LAYER_DEFAULT;
+
+        save_user_config();
+    } else if (config.magic != USER_CONFIG_MAGIC) {
+        rotation_index = 0;
+        scroll_speed_index = SCROLL_SPEED_NORMAL;
+        is_vertical_scrolling_only = false;
+        automatic_mouse_layer_enabled =
+            AUTOMATIC_MOUSE_LAYER_DEFAULT;
+
+        save_user_config();
+    } else {
+        rotation_index =
+            (config.rotation_index < ROTATION_COUNT)
+                ? config.rotation_index
+                : 0;
+
+        scroll_speed_index =
+            (config.scroll_speed_index < ARRAY_SIZE(scroll_speed_divisors))
+                ? config.scroll_speed_index
+                : SCROLL_SPEED_NORMAL;
+
+        is_vertical_scrolling_only =
+            (config.vertical_scrolling_only & VERTICAL_SCROLLING_ONLY_BIT) != 0;
+
+        automatic_mouse_layer_enabled =
+            (config.vertical_scrolling_only & AUTOMATIC_MOUSE_LAYER_BIT) != 0;
     }
 
     apply_scroll_speed();
 }
+
 
 static inline int8_t clamp_mouse_xy(int16_t value) {
     if (value < -127) {
@@ -195,6 +281,8 @@ static report_mouse_t apply_rotation(report_mouse_t mouse_report) {
 }
 
 report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
+    restore_led_mouse_activity();
+
     /*
      * Physical trackball activity notification.
      *
@@ -208,6 +296,7 @@ report_mouse_t pointing_device_task_user(report_mouse_t mouse_report) {
      */
     if (mouse_report.x != 0 || mouse_report.y != 0) {
         notify_mouse_activity();
+        notify_led_mouse_activity();
     }
 
     return apply_rotation(mouse_report);
@@ -245,6 +334,22 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 if (value_id_and_data[1] <= 1) {
                     is_vertical_scrolling_only = value_id_and_data[1] != 0;
                 }
+            } else if (value_id_and_data[0] == AUTOMATIC_MOUSE_LAYER_VALUE_ID) {
+                if (value_id_and_data[1] <= 1) {
+                    bool new_value = value_id_and_data[1] != 0;
+
+                    if (new_value != automatic_mouse_layer_enabled) {
+                        automatic_mouse_layer_enabled = new_value;
+
+                        if (automatic_mouse_layer_enabled) {
+                            /*
+                             * Guarantee an immediate Raw HID notification
+                             * after re-enabling the feature.
+                             */
+                            mouse_activity_sent = false;
+                        }
+                    }
+                }
             }
             break;
 
@@ -257,6 +362,8 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 value_id_and_data[1] = keyboard_config.dpi_config;
             } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
                 value_id_and_data[1] = is_vertical_scrolling_only ? 1 : 0;
+            } else if (value_id_and_data[0] == AUTOMATIC_MOUSE_LAYER_VALUE_ID) {
+                value_id_and_data[1] = automatic_mouse_layer_enabled ? 1 : 0;
             }
             break;
 
