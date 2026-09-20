@@ -39,12 +39,7 @@
 #include "eeprom_driver.h"
 #include "eeprom_i2c.h"
 
-// #define DEBUG_EEPROM_OUTPUT
 
-#if defined(CONSOLE_ENABLE) && defined(DEBUG_EEPROM_OUTPUT)
-#    include "timer.h"
-#    include "debug.h"
-#endif // DEBUG_EEPROM_OUTPUT
 
 static inline void fill_target_address(uint8_t *buffer, const void *addr) {
     uintptr_t p = (uintptr_t)addr;
@@ -71,9 +66,6 @@ void eeprom_driver_format(bool erase) {
 }
 
 void eeprom_driver_erase(void) {
-#if defined(CONSOLE_ENABLE) && defined(DEBUG_EEPROM_OUTPUT)
-    uint32_t start = timer_read32();
-#endif
 
     uint8_t buf[EXTERNAL_EEPROM_PAGE_SIZE];
     memset(buf, 0x00, EXTERNAL_EEPROM_PAGE_SIZE);
@@ -81,9 +73,6 @@ void eeprom_driver_erase(void) {
         eeprom_write_block(buf, (void *)(uintptr_t)addr, EXTERNAL_EEPROM_PAGE_SIZE);
     }
 
-#if defined(CONSOLE_ENABLE) && defined(DEBUG_EEPROM_OUTPUT)
-    dprintf("EEPROM erase took %ldms to complete\n", ((long)(timer_read32() - start)));
-#endif
 }
 
 void eeprom_read_block(void *buf, const void *addr, size_t len) {
@@ -93,13 +82,6 @@ void eeprom_read_block(void *buf, const void *addr, size_t len) {
     i2c_transmit(EXTERNAL_EEPROM_I2C_ADDRESS((uintptr_t)addr), complete_packet, EXTERNAL_EEPROM_ADDRESS_SIZE, 100);
     i2c_receive(EXTERNAL_EEPROM_I2C_ADDRESS((uintptr_t)addr), buf, len, 100);
 
-#if defined(CONSOLE_ENABLE) && defined(DEBUG_EEPROM_OUTPUT)
-    dprintf("[EEPROM R] 0x%04X: ", ((int)addr));
-    for (size_t i = 0; i < len; ++i) {
-        dprintf(" %02X", (int)(((uint8_t *)buf)[i]));
-    }
-    dprintf("\n");
-#endif // DEBUG_EEPROM_OUTPUT
 }
 
 void eeprom_write_block(const void *buf, void *addr, size_t len) {
@@ -124,13 +106,6 @@ void eeprom_write_block(const void *buf, void *addr, size_t len) {
             complete_packet[EXTERNAL_EEPROM_ADDRESS_SIZE + i] = read_buf[i];
         }
 
-#if defined(CONSOLE_ENABLE) && defined(DEBUG_EEPROM_OUTPUT)
-        dprintf("[EEPROM W] 0x%04X: ", ((int)target_addr));
-        for (uint8_t i = 0; i < write_length; i++) {
-            dprintf(" %02X", (int)(read_buf[i]));
-        }
-        dprintf("\n");
-#endif // DEBUG_EEPROM_OUTPUT
 
         i2c_transmit(EXTERNAL_EEPROM_I2C_ADDRESS((uintptr_t)addr), complete_packet, EXTERNAL_EEPROM_ADDRESS_SIZE + write_length, 100);
         wait_ms(EXTERNAL_EEPROM_WRITE_TIME);

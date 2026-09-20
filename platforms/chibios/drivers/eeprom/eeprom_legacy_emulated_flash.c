@@ -21,7 +21,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include "util.h"
-#include "debug.h"
 #include "eeprom_legacy_emulated_flash.h"
 #include "legacy_flash_ops.h"
 #include "eeprom_driver.h"
@@ -156,65 +155,8 @@ static uint8_t *DataBuf = (uint8_t *)WordBuf;
 /* Pointer to the first available slot within the write log */
 static uint16_t *empty_slot;
 
-// #define DEBUG_EEPROM_OUTPUT
 
-/*
- * Debug print utils
- */
 
-#if defined(DEBUG_EEPROM_OUTPUT)
-
-#    define debug_eeprom debug_enable
-#    define eeprom_println(s) println(s)
-#    define eeprom_printf(fmt, ...) xprintf(fmt, ##__VA_ARGS__);
-
-#else /* NO_DEBUG */
-
-#    define debug_eeprom false
-#    define eeprom_println(s)
-#    define eeprom_printf(fmt, ...)
-
-#endif /* NO_DEBUG */
-
-void print_eeprom(void) {
-#ifndef NO_DEBUG
-    int empty_rows = 0;
-    for (uint16_t i = 0; i < FEE_DENSITY_BYTES; i++) {
-        if (i % 16 == 0) {
-            if (i >= FEE_DENSITY_BYTES - 16) {
-                /* Make sure we display the last row */
-                empty_rows = 0;
-            }
-            /* Check if this row is uninitialized */
-            ++empty_rows;
-            for (uint16_t j = 0; j < 16; j++) {
-                if (DataBuf[i + j]) {
-                    empty_rows = 0;
-                    break;
-                }
-            }
-            if (empty_rows > 1) {
-                /* Repeat empty row */
-                if (empty_rows == 2) {
-                    /* Only display the first repeat empty row */
-                    println("*");
-                }
-                i += 15;
-                continue;
-            }
-            xprintf("%04x", i);
-        }
-        if (i % 8 == 0) {
-            print(" ");
-        }
-
-        xprintf(" %02x", DataBuf[i]);
-        if ((i + 1) % 16 == 0) {
-            println("");
-        }
-    }
-#endif
-}
 
 uint16_t EEPROM_Init(void) {
     /* Load emulated eeprom contents from compacted flash into memory */
@@ -224,11 +166,6 @@ uint16_t EEPROM_Init(void) {
         *dest = ~*src;
     }
 
-    if (debug_eeprom) {
-        println("EEPROM_Init Compacted Pages:");
-        print_eeprom();
-        println("EEPROM_Init Write Log:");
-    }
 
     /* Replay write log */
     uint16_t *log_addr;
@@ -242,7 +179,6 @@ uint16_t EEPROM_Init(void) {
             uint8_t bvalue = (uint8_t)address;
             address >>= 8;
             DataBuf[address] = bvalue;
-            eeprom_printf("DataBuf[0x%02x] = 0x%02x;\n", address, bvalue);
         } else {
             uint16_t wvalue;
             /* Check if value is in next word */
@@ -253,7 +189,6 @@ uint16_t EEPROM_Init(void) {
                 }
                 wvalue = ~*log_addr;
                 if (!wvalue) {
-                    eeprom_printf("Incomplete write at log_addr: 0x%04lx;\n", (uint32_t)log_addr);
                     /* Possibly incomplete write.  Ignore and continue */
                     continue;
                 }
@@ -264,7 +199,6 @@ uint16_t EEPROM_Init(void) {
             } else {
                 /* Reserved for future use */
                 if (address & FEE_VALUE_RESERVED) {
-                    eeprom_printf("Reserved encoded value at log_addr: 0x%04lx;\n", (uint32_t)log_addr);
                     continue;
                 }
                 /* Optimization for 0 or 1 values. */
@@ -273,20 +207,14 @@ uint16_t EEPROM_Init(void) {
                 address <<= 1;
             }
             if (address < FEE_DENSITY_BYTES) {
-                eeprom_printf("DataBuf[0x%04x] = 0x%04x;\n", address, wvalue);
                 *(uint16_t *)(&DataBuf[address]) = wvalue;
             } else {
-                eeprom_printf("DataBuf[0x%04x] cannot be set to 0x%04x [BAD ADDRESS]\n", address, wvalue);
             }
         }
     }
 
     empty_slot = log_addr;
 
-    if (debug_eeprom) {
-        println("EEPROM_Init Final DataBuf:");
-        print_eeprom();
-    }
 
     return FEE_DENSITY_BYTES;
 }
@@ -296,19 +224,16 @@ static void eeprom_clear(void) {
     FLASH_Unlock();
 
     for (uint16_t page_num = 0; page_num < FEE_PAGE_COUNT; ++page_num) {
-        eeprom_printf("FLASH_ErasePage(0x%04lx)\n", (uint32_t)(FEE_PAGE_BASE_ADDRESS + (page_num * FEE_PAGE_SIZE)));
         FLASH_ErasePage(FEE_PAGE_BASE_ADDRESS + (page_num * FEE_PAGE_SIZE));
     }
 
     FLASH_Lock();
 
     empty_slot = (uint16_t *)FEE_WRITE_LOG_BASE_ADDRESS;
-    eeprom_printf("eeprom_clear empty_slot: 0x%08lx\n", (uint32_t)empty_slot);
 }
 
 /* Erase emulated eeprom */
 void EEPROM_Erase(void) {
-    eeprom_println("EEPROM_Erase");
     /* Erase compacted pages and write log */
     eeprom_clear();
     /* re-initialize to reset DataBuf */
@@ -331,7 +256,6 @@ static uint8_t eeprom_compact(void) {
     for (; dest < FEE_COMPACTED_LAST_ADDRESS; ++src, dest += 2) {
         value = *src;
         if (value) {
-            eeprom_printf("FLASH_ProgramHalfWord(0x%04lx, 0x%04x)\n", (uint32_t)dest, ~value);
             FLASH_Status status = FLASH_ProgramHalfWord(dest, ~value);
             if (status != FLASH_COMPLETE) final_status = status;
         }
@@ -339,10 +263,6 @@ static uint8_t eeprom_compact(void) {
 
     FLASH_Lock();
 
-    if (debug_eeprom) {
-        println("eeprom_compacted:");
-        print_eeprom();
-    }
 
     return final_status;
 }
@@ -358,7 +278,6 @@ static uint8_t eeprom_write_direct_entry(uint16_t Address) {
 
         FLASH_Unlock();
 
-        eeprom_printf("FLASH_ProgramHalfWord(0x%08lx, 0x%04x) [DIRECT]\n", (uint32_t)directAddress, value);
         FLASH_Status status = FLASH_ProgramHalfWord(directAddress, value);
 
         FLASH_Lock();
@@ -371,7 +290,6 @@ static uint8_t eeprom_write_log_word_entry(uint16_t Address) {
     FLASH_Status final_status = FLASH_COMPLETE;
 
     uint16_t value = *(uint16_t *)(&DataBuf[Address]);
-    eeprom_printf("eeprom_write_log_word_entry(0x%04x): 0x%04x\n", Address, value);
 
     /* MSB signifies the lowest 128-byte optimization is not in effect */
     uint16_t encoding = FEE_WORD_ENCODING;
@@ -400,12 +318,10 @@ static uint8_t eeprom_write_log_word_entry(uint16_t Address) {
     FLASH_Unlock();
 
     /* address */
-    eeprom_printf("FLASH_ProgramHalfWord(0x%08lx, 0x%04x)\n", (uint32_t)empty_slot, Address);
     final_status = FLASH_ProgramHalfWord((uintptr_t)empty_slot++, Address);
 
     /* value */
     if (encoding == (FEE_WORD_ENCODING | FEE_VALUE_NEXT)) {
-        eeprom_printf("FLASH_ProgramHalfWord(0x%08lx, 0x%04x)\n", (uint32_t)empty_slot, ~value);
         FLASH_Status status = FLASH_ProgramHalfWord((uintptr_t)empty_slot++, ~value);
         if (status != FLASH_COMPLETE) final_status = status;
     }
@@ -416,7 +332,6 @@ static uint8_t eeprom_write_log_word_entry(uint16_t Address) {
 }
 
 static uint8_t eeprom_write_log_byte_entry(uint16_t Address) {
-    eeprom_printf("eeprom_write_log_byte_entry(0x%04x): 0x%02x\n", Address, DataBuf[Address]);
 
     /* if couldn't find an empty spot, we must compact emulated eeprom */
     if (empty_slot >= (uint16_t *)FEE_WRITE_LOG_LAST_ADDRESS) {
@@ -431,7 +346,6 @@ static uint8_t eeprom_write_log_byte_entry(uint16_t Address) {
     uint16_t value = (Address << 8) | DataBuf[Address];
 
     /* write to flash */
-    eeprom_printf("FLASH_ProgramHalfWord(0x%08lx, 0x%04x)\n", (uint32_t)empty_slot, value);
     FLASH_Status status = FLASH_ProgramHalfWord((uintptr_t)empty_slot++, value);
 
     FLASH_Lock();
@@ -442,19 +356,16 @@ static uint8_t eeprom_write_log_byte_entry(uint16_t Address) {
 uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
     /* if the address is out-of-bounds, do nothing */
     if (Address >= FEE_DENSITY_BYTES) {
-        eeprom_printf("EEPROM_WriteDataByte(0x%04x, 0x%02x) [BAD ADDRESS]\n", Address, DataByte);
         return FLASH_BAD_ADDRESS;
     }
 
     /* if the value is the same, don't bother writing it */
     if (DataBuf[Address] == DataByte) {
-        eeprom_printf("EEPROM_WriteDataByte(0x%04x, 0x%02x) [SKIP SAME]\n", Address, DataByte);
         return 0;
     }
 
     /* keep DataBuf cache in sync */
     DataBuf[Address] = DataByte;
-    eeprom_printf("EEPROM_WriteDataByte DataBuf[0x%04x] = 0x%02x\n", Address, DataBuf[Address]);
 
     /* perform the write into flash memory */
     /* First, attempt to write directly into the compacted flash area */
@@ -467,16 +378,12 @@ uint8_t EEPROM_WriteDataByte(uint16_t Address, uint8_t DataByte) {
             status = eeprom_write_log_word_entry(Address & 0xFFFE);
         }
     }
-    if (status != 0 && status != FLASH_COMPLETE) {
-        eeprom_printf("EEPROM_WriteDataByte [STATUS == %d]\n", status);
-    }
     return status;
 }
 
 uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
     /* if the address is out-of-bounds, do nothing */
     if (Address >= FEE_DENSITY_BYTES) {
-        eeprom_printf("EEPROM_WriteDataWord(0x%04x, 0x%04x) [BAD ADDRESS]\n", Address, DataWord);
         return FLASH_BAD_ADDRESS;
     }
 
@@ -486,22 +393,17 @@ uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
         final_status        = EEPROM_WriteDataByte(Address, DataWord);
         FLASH_Status status = EEPROM_WriteDataByte(Address + 1, DataWord >> 8);
         if (status != FLASH_COMPLETE) final_status = status;
-        if (final_status != 0 && final_status != FLASH_COMPLETE) {
-            eeprom_printf("EEPROM_WriteDataWord [STATUS == %d]\n", final_status);
-        }
         return final_status;
     }
 
     /* if the value is the same, don't bother writing it */
     uint16_t oldValue = *(uint16_t *)(&DataBuf[Address]);
     if (oldValue == DataWord) {
-        eeprom_printf("EEPROM_WriteDataWord(0x%04x, 0x%04x) [SKIP SAME]\n", Address, DataWord);
         return 0;
     }
 
     /* keep DataBuf cache in sync */
     *(uint16_t *)(&DataBuf[Address]) = DataWord;
-    eeprom_printf("EEPROM_WriteDataWord DataBuf[0x%04x] = 0x%04x\n", Address, *(uint16_t *)(&DataBuf[Address]));
 
     /* perform the write into flash memory */
     /* First, attempt to write directly into the compacted flash area */
@@ -525,9 +427,6 @@ uint8_t EEPROM_WriteDataWord(uint16_t Address, uint16_t DataWord) {
             final_status = eeprom_write_log_word_entry(Address);
         }
     }
-    if (final_status != 0 && final_status != FLASH_COMPLETE) {
-        eeprom_printf("EEPROM_WriteDataWord [STATUS == %d]\n", final_status);
-    }
     return final_status;
 }
 
@@ -538,7 +437,6 @@ uint8_t EEPROM_ReadDataByte(uint16_t Address) {
         DataByte = DataBuf[Address];
     }
 
-    eeprom_printf("EEPROM_ReadDataByte(0x%04x): 0x%02x\n", Address, DataByte);
 
     return DataByte;
 }
@@ -555,7 +453,6 @@ uint16_t EEPROM_ReadDataWord(uint16_t Address) {
         }
     }
 
-    eeprom_printf("EEPROM_ReadDataWord(0x%04x): 0x%04x\n", Address, DataWord);
 
     return DataWord;
 }
