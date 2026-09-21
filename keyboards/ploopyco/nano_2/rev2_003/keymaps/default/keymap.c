@@ -330,7 +330,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                     apply_scroll_speed();
                 }
             } else if (value_id_and_data[0] == DPI_VALUE_ID) {
-                if (value_id_and_data[1] < 5) {
+                if (value_id_and_data[1] < ARRAY_SIZE(dpi_array)) {
                     keyboard_config.dpi_config = value_id_and_data[1];
                     eeconfig_update_kb(keyboard_config.raw);
                     pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
