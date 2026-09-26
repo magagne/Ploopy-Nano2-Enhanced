@@ -19,7 +19,7 @@ static bool caps_state_expected = false;
 static bool automatic_mouse_layer_enabled = AUTOMATIC_MOUSE_LAYER_DEFAULT;
 
 static void notify_led_auto_mouse_layer(bool active) {
-    if (!automatic_mouse_layer_enabled) {
+    if (active && !automatic_mouse_layer_enabled) {
         return;
     }
 
@@ -330,7 +330,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                     apply_scroll_speed();
                 }
             } else if (value_id_and_data[0] == DPI_VALUE_ID) {
-                if (value_id_and_data[1] < ARRAY_SIZE(dpi_array)) {
+                if (value_id_and_data[1] < sizeof((uint16_t[])PLOOPY_DPI_OPTIONS) / sizeof(uint16_t)) {
                     keyboard_config.dpi_config = value_id_and_data[1];
                     eeconfig_update_kb(keyboard_config.raw);
                     pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
@@ -346,12 +346,19 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                     if (new_value != automatic_mouse_layer_enabled) {
                         automatic_mouse_layer_enabled = new_value;
 
-                        if (automatic_mouse_layer_enabled) {
+                        /*
+                         * Reset movement state so re-enabling during movement
+                         * generates a fresh activation on the next report.
+                         */
+                        auto_mouse_layer_moving = false;
+                        auto_mouse_layer_sent = false;
+
+                        if (!automatic_mouse_layer_enabled) {
                             /*
-                             * Guarantee an immediate Raw HID notification
-                             * after re-enabling the feature.
+                             * Always clear the Windows Caps Lock signal when
+                             * AutoMouseLayer is disabled.
                              */
-                            auto_mouse_layer_sent = false;
+                            notify_led_auto_mouse_layer(false);
                         }
                     }
                 }
