@@ -101,7 +101,7 @@ AutoMouseLayer signal through either transport.
 
 The keyboard owns the AutoMouseLayer timeout and layer activation logic.
 
-The current keyboard timeout is **700 ms**.
+The keyboard uses a short AutoMouseLayer timeout, typically in the **400–700 ms range**. The exact value may vary between firmware versions.
 
 See [AutoMouseLayer-HID.md](AutoMouseLayer-HID.md).
 
