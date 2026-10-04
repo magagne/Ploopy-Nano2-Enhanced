@@ -363,7 +363,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 }
             } else if (value_id_and_data[0] == TEMPORARY_DPI_OFFSET_VALUE_ID) {
                 if (value_id_and_data[1] <= 2) {
-                    int8_t new_offset = (int8_t)value_id_and_data[1] * 2 - 2;
+                    int8_t new_offset = (int8_t)value_id_and_data[1] * 3 - 3;
 
                     temporary_dpi_offset = new_offset;
                     set_temporary_dpi_offset(temporary_dpi_offset);
