@@ -142,7 +142,7 @@ static void save_user_config(void) {
     config.vertical_scrolling_only =
         (is_vertical_scrolling_only ? VERTICAL_SCROLLING_ONLY_BIT : 0) |
         (automatic_mouse_layer_enabled ? AUTOMATIC_MOUSE_LAYER_BIT : 0) |
-        ((uint8_t)(temporary_dpi_offset + 3) << TEMPORARY_DPI_OFFSET_SHIFT);
+        ((uint8_t)(temporary_dpi_offset + 4) << TEMPORARY_DPI_OFFSET_SHIFT);
 
     config.magic = USER_CONFIG_MAGIC;
 
@@ -208,8 +208,8 @@ void keyboard_post_init_user(void) {
 
         if (encoded_offset == 0) {
             temporary_dpi_offset = 1;
-        } else if (encoded_offset <= 5) {
-            temporary_dpi_offset = (int8_t)encoded_offset - 3;
+        } else if (encoded_offset <= 7) {
+            temporary_dpi_offset = (int8_t)encoded_offset - 4;
         } else {
             temporary_dpi_offset = 1;
         }
@@ -362,8 +362,8 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                     is_vertical_scrolling_only = value_id_and_data[1] != 0;
                 }
             } else if (value_id_and_data[0] == TEMPORARY_DPI_OFFSET_VALUE_ID) {
-                if (value_id_and_data[1] <= 4) {
-                    int8_t new_offset = (int8_t)value_id_and_data[1] - 2;
+                if (value_id_and_data[1] <= 6) {
+                    int8_t new_offset = (int8_t)value_id_and_data[1] - 3;
 
                     temporary_dpi_offset = new_offset;
                     set_temporary_dpi_offset(temporary_dpi_offset);
@@ -405,7 +405,7 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
             } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
                 value_id_and_data[1] = is_vertical_scrolling_only ? 1 : 0;
             } else if (value_id_and_data[0] == TEMPORARY_DPI_OFFSET_VALUE_ID) {
-                value_id_and_data[1] = (uint8_t)(temporary_dpi_offset + 2);
+                value_id_and_data[1] = (uint8_t)(temporary_dpi_offset + 3);
             } else if (value_id_and_data[0] == AUTOMATIC_MOUSE_LAYER_VALUE_ID) {
                 value_id_and_data[1] = automatic_mouse_layer_enabled ? 1 : 0;
             }
