@@ -37,9 +37,9 @@
 
 #ifndef PLOOPY_DPI_OPTIONS
 #    define PLOOPY_DPI_OPTIONS \
-        { 600, 750, 900, 1050, 1200, 1400, 1600, 2000, 2400, 2800, 3200 }
+        { 1000, 1200, 1400, 1600, 1800 }
 #    ifndef PLOOPY_DPI_DEFAULT
-#        define PLOOPY_DPI_DEFAULT 2
+#        define PLOOPY_DPI_DEFAULT 1
 #    endif
 #endif
 #ifndef PLOOPY_DPI_DEFAULT
@@ -166,10 +166,10 @@ static void apply_dpi(void) {
 }
 
 void set_temporary_dpi_offset(int8_t offset) {
-    if (offset < -3) {
-        offset = -3;
-    } else if (offset > 3) {
-        offset = 3;
+    if (offset < -1) {
+        offset = -1;
+    } else if (offset > 1) {
+        offset = 1;
     }
 
     temporary_dpi_offset = offset;
