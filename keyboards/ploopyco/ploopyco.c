@@ -166,10 +166,10 @@ static void apply_dpi(void) {
 }
 
 void set_temporary_dpi_offset(int8_t offset) {
-    if (offset < -1) {
-        offset = -1;
-    } else if (offset > 1) {
-        offset = 1;
+    if (offset < -2) {
+        offset = -2;
+    } else if (offset > 2) {
+        offset = 2;
     }
 
     temporary_dpi_offset = offset;
