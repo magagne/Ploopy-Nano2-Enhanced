@@ -3,9 +3,15 @@
 #include <raw_hid.h>
 #include <timer.h>
 
+extern void set_temporary_dpi(bool active);
+extern void set_temporary_dpi_offset(int8_t offset);
+
 #define AUTOMATIC_MOUSE_LAYER_DEFAULT true
 #define AUTOMATIC_MOUSE_LAYER_BIT     0x02
 #define VERTICAL_SCROLLING_ONLY_BIT   0x01
+#define TEMPORARY_DPI_OFFSET_VALUE_ID 6
+#define TEMPORARY_DPI_OFFSET_MASK     0x1C
+#define TEMPORARY_DPI_OFFSET_SHIFT    2
 
 #define PLOOPY_AUTO_MOUSE_LAYER_REPORT_LENGTH       32
 #define PLOOPY_AUTO_MOUSE_LAYER_INTERVAL_MS         30
@@ -107,6 +113,7 @@ static const uint8_t scroll_speed_divisors[] = {
 
 static uint8_t rotation_index = 0;
 static uint8_t scroll_speed_index = SCROLL_SPEED_NORMAL;
+static int8_t temporary_dpi_offset = 1;
 
 
 typedef union {
@@ -134,7 +141,8 @@ static void save_user_config(void) {
 
     config.vertical_scrolling_only =
         (is_vertical_scrolling_only ? VERTICAL_SCROLLING_ONLY_BIT : 0) |
-        (automatic_mouse_layer_enabled ? AUTOMATIC_MOUSE_LAYER_BIT : 0);
+        (automatic_mouse_layer_enabled ? AUTOMATIC_MOUSE_LAYER_BIT : 0) |
+        ((uint8_t)(temporary_dpi_offset + 3) << TEMPORARY_DPI_OFFSET_SHIFT);
 
     config.magic = USER_CONFIG_MAGIC;
 
@@ -193,6 +201,20 @@ void keyboard_post_init_user(void) {
 
         automatic_mouse_layer_enabled =
             (config.vertical_scrolling_only & AUTOMATIC_MOUSE_LAYER_BIT) != 0;
+
+        uint8_t encoded_offset =
+            (config.vertical_scrolling_only & TEMPORARY_DPI_OFFSET_MASK) >>
+            TEMPORARY_DPI_OFFSET_SHIFT;
+
+        if (encoded_offset == 0) {
+            temporary_dpi_offset = 1;
+        } else if (encoded_offset <= 5) {
+            temporary_dpi_offset = (int8_t)encoded_offset - 3;
+        } else {
+            temporary_dpi_offset = 1;
+        }
+
+        set_temporary_dpi_offset(temporary_dpi_offset);
     }
 
     apply_scroll_speed();
@@ -333,11 +355,19 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 if (value_id_and_data[1] < sizeof((uint16_t[])PLOOPY_DPI_OPTIONS) / sizeof(uint16_t)) {
                     keyboard_config.dpi_config = value_id_and_data[1];
                     eeconfig_update_kb(keyboard_config.raw);
-                    pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
+                    set_temporary_dpi_offset(temporary_dpi_offset);
                 }
             } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
                 if (value_id_and_data[1] <= 1) {
                     is_vertical_scrolling_only = value_id_and_data[1] != 0;
+                }
+            } else if (value_id_and_data[0] == TEMPORARY_DPI_OFFSET_VALUE_ID) {
+                if (value_id_and_data[1] <= 4) {
+                    int8_t new_offset = (int8_t)value_id_and_data[1] - 2;
+
+                    temporary_dpi_offset = new_offset;
+                    set_temporary_dpi_offset(temporary_dpi_offset);
+                    save_user_config();
                 }
             } else if (value_id_and_data[0] == AUTOMATIC_MOUSE_LAYER_VALUE_ID) {
                 if (value_id_and_data[1] <= 1) {
@@ -374,6 +404,8 @@ void via_custom_value_command_kb(uint8_t *data, uint8_t length) {
                 value_id_and_data[1] = keyboard_config.dpi_config;
             } else if (value_id_and_data[0] == VERTICAL_SCROLLING_ONLY_VALUE_ID) {
                 value_id_and_data[1] = is_vertical_scrolling_only ? 1 : 0;
+            } else if (value_id_and_data[0] == TEMPORARY_DPI_OFFSET_VALUE_ID) {
+                value_id_and_data[1] = (uint8_t)(temporary_dpi_offset + 2);
             } else if (value_id_and_data[0] == AUTOMATIC_MOUSE_LAYER_VALUE_ID) {
                 value_id_and_data[1] = automatic_mouse_layer_enabled ? 1 : 0;
             }
@@ -450,6 +482,14 @@ bool via_command_kb(uint8_t *data, uint8_t length) {
 
             raw_hid_send(response, length);
 
+            return true;
+
+        case 'T':
+            set_temporary_dpi(true);
+            return true;
+
+        case 't':
+            set_temporary_dpi(false);
             return true;
 
         default:

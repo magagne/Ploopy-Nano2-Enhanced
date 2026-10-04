@@ -159,6 +159,37 @@
               ]
             },
             {
+              "label": "Temporary DPI Offset",
+              "type": "dropdown",
+              "options": [
+                [
+                  "-2",
+                  0
+                ],
+                [
+                  "-1",
+                  1
+                ],
+                [
+                  "0",
+                  2
+                ],
+                [
+                  "+1",
+                  3
+                ],
+                [
+                  "+2",
+                  4
+                ]
+              ],
+              "content": [
+                "id_temporary_dpi_offset",
+                0,
+                6
+              ]
+            },
+            {
               "label": "Automatic Mouse Layer",
               "type": "toggle",
               "content": [

@@ -72,8 +72,11 @@ float scroll_accumulated_v      = 0;
 float ploopy_dragscroll_divisor_h = PLOOPY_DRAGSCROLL_DIVISOR_H;
 float ploopy_dragscroll_divisor_v = PLOOPY_DRAGSCROLL_DIVISOR_V;
 
+void set_temporary_dpi(bool active);
+
 bool led_update_kb(led_t led_state) {
     is_drag_scroll = led_state.scroll_lock;
+    set_temporary_dpi(!led_state.num_lock);
     return led_update_user(led_state);
 }
 
@@ -141,10 +144,47 @@ void toggle_drag_scroll(void) {
     is_drag_scroll ^= 1;
 }
 
+static bool temporary_dpi_active;
+static int8_t temporary_dpi_offset = 1;
+
+static void apply_dpi(void) {
+    int target = (int)keyboard_config.dpi_config;
+
+    if (temporary_dpi_active) {
+        target += temporary_dpi_offset;
+
+        if (target < 0) {
+            target = 0;
+        }
+
+        if (target >= DPI_OPTION_SIZE) {
+            target = DPI_OPTION_SIZE - 1;
+        }
+    }
+
+    pointing_device_set_cpi(dpi_array[target]);
+}
+
+void set_temporary_dpi_offset(int8_t offset) {
+    if (offset < -2) {
+        offset = -2;
+    } else if (offset > 2) {
+        offset = 2;
+    }
+
+    temporary_dpi_offset = offset;
+    apply_dpi();
+}
+
+void set_temporary_dpi(bool active) {
+    temporary_dpi_active = active;
+    apply_dpi();
+}
+
 void cycle_dpi(void) {
     keyboard_config.dpi_config = (keyboard_config.dpi_config + 1) % DPI_OPTION_SIZE;
     eeconfig_update_kb(keyboard_config.raw);
-    pointing_device_set_cpi(dpi_array[keyboard_config.dpi_config]);
+    apply_dpi();
 }
 
 report_mouse_t pointing_device_task_kb(report_mouse_t mouse_report) {
